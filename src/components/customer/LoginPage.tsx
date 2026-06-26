@@ -96,6 +96,12 @@ export default function LoginPage() {
       }
 
       // Login successful
+      if (!data.user) {
+        setError('Login response invalid. Please try again.');
+        setLoading(false);
+        return;
+      }
+
       login({
         id: data.user.id,
         name: data.user.name,
@@ -104,10 +110,11 @@ export default function LoginPage() {
         isAdmin: data.user.isAdmin,
       });
 
-      const navStore = (await import('@/lib/store')).then(m => m.useNavStore.getState());
-      (await navStore).navigate('home');
-    } catch {
-      setError('Verification failed. Please try again.');
+      const { useNavStore } = await import('@/lib/store');
+      useNavStore.getState().navigate('home');
+    } catch (e: any) {
+      console.error('[Login verify error]', e);
+      setError(e?.message || 'Verification failed. Please try again.');
     } finally {
       setLoading(false);
     }
