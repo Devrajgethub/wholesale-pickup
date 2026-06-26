@@ -12,9 +12,23 @@ function createDb(): PrismaClient {
   const isTurso = databaseUrl.startsWith('libsql://');
 
   console.log('[DB] Initializing database connection...');
-  console.log('[DB] DATABASE_URL prefix:', databaseUrl.substring(0, 20) + '...');
+  console.log('[DB] DATABASE_URL prefix:', databaseUrl ? databaseUrl.substring(0, 20) + '...' : 'NOT SET');
   console.log('[DB] Is Turso:', isTurso);
   console.log('[DB] Has AUTH_TOKEN:', !!process.env.DATABASE_AUTH_TOKEN);
+
+  // CRITICAL: If no DATABASE_URL is set, we cannot connect to any database
+  if (!databaseUrl) {
+    console.error('[DB] ═══════════════════════════════════════════════════════');
+    console.error('[DB] FATAL: DATABASE_URL environment variable is NOT SET!');
+    console.error('[DB] Please add it in Vercel → Settings → Environment Variables');
+    console.error('[DB] Get it from: Turso Dashboard → your database → Connection URL');
+    console.error('[DB] ═══════════════════════════════════════════════════════');
+    // Return a dummy PrismaClient — it will fail on first query with a clear message
+    if (!globalForDb.prisma) {
+      globalForDb.prisma = new PrismaClient({ log: ['error', 'warn'] });
+    }
+    return globalForDb.prisma;
+  }
 
   if (isTurso) {
     // Reuse PrismaClient if already created

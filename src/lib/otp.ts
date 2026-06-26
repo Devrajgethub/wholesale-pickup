@@ -142,6 +142,12 @@ export async function getRateLimitInfo(mobile: string): Promise<{ canSend: boole
 
 export async function ensureOtpTable(): Promise<void> {
   const databaseUrl = process.env.DATABASE_URL || '';
+
+  if (!databaseUrl) {
+    console.error('[OTP] FATAL: DATABASE_URL is not set. Cannot create OTP table.');
+    throw new Error('DATABASE_URL environment variable is not configured. Please add it in Vercel → Settings → Environment Variables.');
+  }
+
   if (!databaseUrl.startsWith('libsql://')) {
     // Local SQLite - table already exists via prisma db push
     return;
