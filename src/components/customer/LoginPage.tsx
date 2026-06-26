@@ -4,7 +4,7 @@ import { useAuthStore } from '@/lib/store';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Phone, User, Building, Loader2, ArrowRight, ShieldCheck, KeyRound, RotateCcw } from 'lucide-react';
 
 type Step = 'details' | 'otp';
@@ -15,14 +15,18 @@ export default function LoginPage() {
   const [name, setName] = useState('');
   const [mobile, setMobile] = useState('');
   const [businessName, setBusinessName] = useState('');
-  const [otp, setOtp] = useState(['', '', '', '']);
+  const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [otpSent, setOtpSent] = useState(false);
   const [resendTimer, setResendTimer] = useState(0);
   const [isDemo, setIsDemo] = useState(false);
-  const [smsFailed, setSmsFailed] = useState(false);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const confirmationRef = useRef<any>(null);
+
+  // Firebase Phone Auth uses 6-digit OTP, demo uses 4-digit
+  const useFirebase = typeof window !== 'undefined' && !!process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
+  const otpLength = useFirebase ? 6 : 4;
 
   // Resend countdown timer
   useEffect(() => {
@@ -32,6 +36,19 @@ export default function LoginPage() {
     }
   }, [resendTimer]);
 
+  // Reset OTP array when mode changes
+  useEffect(() => {
+    setOtp(Array(otpLength).fill(''));
+  }, [otpLength]);
+
+  // Clean up reCAPTCHA on unmount
+  useEffect(() => {
+    return () => {
+      const container = document.getElementById('recaptcha-container');
+      if (container) container.innerHTML = '';
+    };
+  }, []);
+
   const handleSendOTP = async () => {
     setError('');
     if (mobile.length < 10) {
@@ -40,30 +57,77 @@ export default function LoginPage() {
     }
 
     setLoading(true);
+
     try {
-      const res = await fetch('/api/otp/send', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mobile }),
-      });
+      if (useFirebase) {
+        // ===== FIREBASE PHONE AUTH (Real SMS) =====
+        const { auth } = await import('@/lib/firebase');
+        const { signInWithPhoneNumber, RecaptchaVerifier } = await import('firebase/auth');
 
-      const data = await res.json();
+        if (!auth) throw new Error('Firebase not configured');
 
-      if (!res.ok) {
-        if (res.status === 429) {
-          setError(data.error || 'Please wait before requesting a new OTP');
+        // Clear old reCAPTCHA
+        const container = document.getElementById('recaptcha-container');
+        if (container) container.innerHTML = '';
+
+        // Create invisible reCAPTCHA verifier
+        const verifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+          size: 'invisible',
+          callback: () => {},
+          'expired-callback': () => {
+            setError('reCAPTCHA expired. Please try again.');
+            setLoading(false);
+          },
+        });
+
+        try {
+          const result = await signInWithPhoneNumber(auth, `+91${mobile}`, verifier);
+          confirmationRef.current = result;
+          setOtpSent(true);
+          setIsDemo(false);
+          setResendTimer(60);
+          setStep('otp');
+        } catch (firebaseError: any) {
+          console.error('[Firebase OTP Send Error]:', firebaseError?.code, firebaseError?.message);
+          verifier.clear();
+
+          if (firebaseError.code === 'auth/too-many-requests') {
+            setError('Too many OTP requests. Please wait a few minutes and try again.');
+          } else if (firebaseError.code === 'auth/invalid-phone-number') {
+            setError('Invalid phone number format.');
+          } else if (firebaseError.code === 'auth/captcha-check-failed') {
+            setError('Security check failed. Please refresh and try again.');
+          } else {
+            setError('Failed to send OTP. Please try again.');
+          }
           setLoading(false);
           return;
         }
-        const detail = data.detail ? ` (${data.detail})` : '';
-        throw new Error((data.error || 'Failed to send OTP') + detail);
-      }
+      } else {
+        // ===== DEMO MODE (OTP = 1234) =====
+        const res = await fetch('/api/otp/send', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ mobile }),
+        });
 
-      setOtpSent(true);
-      setIsDemo(data.demo || false);
-      setSmsFailed(data.smsFailed || false);
-      setResendTimer(60);
-      setStep('otp');
+        const data = await res.json();
+
+        if (!res.ok) {
+          if (res.status === 429) {
+            setError(data.error || 'Please wait before requesting a new OTP');
+            setLoading(false);
+            return;
+          }
+          const detail = data.detail ? ` (${data.detail})` : '';
+          throw new Error((data.error || 'Failed to send OTP') + detail);
+        }
+
+        setOtpSent(true);
+        setIsDemo(data.demo || false);
+        setResendTimer(60);
+        setStep('otp');
+      }
     } catch (e: any) {
       setError(e?.message || 'Failed to send OTP. Try again.');
     } finally {
@@ -73,50 +137,96 @@ export default function LoginPage() {
 
   const handleVerifyOTP = async () => {
     setError('');
-    const otpString = otp.join('');
+    const otpString = otp.join('').slice(0, otpLength);
 
-    if (otpString.length < 4) {
-      setError('Enter the complete 4-digit OTP');
+    if (otpString.length < otpLength) {
+      setError(`Enter the complete ${otpLength}-digit OTP`);
       return;
     }
 
     setLoading(true);
     try {
-      const res = await fetch('/api/otp/verify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mobile, otp: otpString, name, businessName }),
-      });
+      if (useFirebase && confirmationRef.current) {
+        // ===== FIREBASE VERIFY =====
+        const result = await confirmationRef.current.confirm(otpString);
+        const idToken = await result.user.getIdToken();
 
-      const data = await res.json();
+        // Send token to our backend for user creation/lookup
+        const res = await fetch('/api/auth/firebase-login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: idToken, name, businessName, mobile }),
+        });
 
-      if (!res.ok) {
-        const detail = data.detail ? ` (${data.detail})` : '';
-        setError(data.error + detail);
-        setLoading(false);
-        return;
+        const data = await res.json();
+
+        if (!res.ok) {
+          const detail = data.detail ? ` (${data.detail})` : '';
+          setError((data.error || 'Verification failed') + detail);
+          setLoading(false);
+          return;
+        }
+
+        if (!data.user) {
+          setError('Login response invalid. Please try again.');
+          setLoading(false);
+          return;
+        }
+
+        login({
+          id: data.user.id,
+          name: data.user.name,
+          mobile: data.user.mobile,
+          businessName: data.user.businessName || '',
+          isAdmin: data.user.isAdmin,
+        });
+
+        const { useNavStore } = await import('@/lib/store');
+        useNavStore.getState().navigate('home');
+      } else {
+        // ===== DEMO VERIFY =====
+        const res = await fetch('/api/otp/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ mobile, otp: otpString, name, businessName }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          const detail = data.detail ? ` (${data.detail})` : '';
+          setError(data.error + detail);
+          setLoading(false);
+          return;
+        }
+
+        if (!data.user) {
+          setError('Login response invalid. Please try again.');
+          setLoading(false);
+          return;
+        }
+
+        login({
+          id: data.user.id,
+          name: data.user.name,
+          mobile: data.user.mobile,
+          businessName: data.user.businessName || '',
+          isAdmin: data.user.isAdmin,
+        });
+
+        const { useNavStore } = await import('@/lib/store');
+        useNavStore.getState().navigate('home');
       }
-
-      // Login successful
-      if (!data.user) {
-        setError('Login response invalid. Please try again.');
-        setLoading(false);
-        return;
-      }
-
-      login({
-        id: data.user.id,
-        name: data.user.name,
-        mobile: data.user.mobile,
-        businessName: data.user.businessName || '',
-        isAdmin: data.user.isAdmin,
-      });
-
-      const { useNavStore } = await import('@/lib/store');
-      useNavStore.getState().navigate('home');
     } catch (e: any) {
       console.error('[Login verify error]', e);
-      setError(e?.message || 'Verification failed. Please try again.');
+
+      if (e?.code === 'auth/invalid-verification-code') {
+        setError('Invalid OTP. Please check and try again.');
+      } else if (e?.code === 'auth/code-expired') {
+        setError('OTP expired. Please request a new one.');
+      } else {
+        setError(e?.message || 'Verification failed. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -131,12 +241,13 @@ export default function LoginPage() {
     setOtp(newOtp);
 
     // Auto-focus next input
-    if (value && index < 3) {
+    if (value && index < otpLength - 1) {
       inputRefs.current[index + 1]?.focus();
     }
 
-    // Auto-submit when all 4 digits entered
-    if (newOtp.every(d => d !== '') && newOtp.join('').length === 4) {
+    // Auto-submit when all digits entered
+    const entered = newOtp.slice(0, otpLength).join('');
+    if (entered.length === otpLength) {
       setTimeout(() => handleVerifyOTP(), 300);
     }
   };
@@ -147,13 +258,12 @@ export default function LoginPage() {
     }
   };
 
-  const handleResend = () => {
+  const handleResend = async () => {
     if (resendTimer > 0) return;
-    setOtp(['', '', '', '']);
-    setSmsFailed(false);
+    setOtp(Array(otpLength).fill(''));
     setError('');
-    // Re-send OTP directly instead of going back
-    handleSendOTP();
+    // Re-send OTP directly
+    await handleSendOTP();
   };
 
   return (
@@ -171,6 +281,9 @@ export default function LoginPage() {
             {step === 'details' ? 'Login to place orders & track them' : `OTP sent to ${mobile}`}
           </p>
         </div>
+
+        {/* reCAPTCHA container (invisible, required by Firebase) */}
+        <div id="recaptcha-container" className="overflow-hidden h-0 w-0 absolute" />
 
         {/* Step 1: Details Form */}
         {step === 'details' && (
@@ -246,24 +359,24 @@ export default function LoginPage() {
                 <ShieldCheck className="h-7 w-7 text-[#0C831F]" />
               </div>
               <p className="text-sm text-gray-600">
-                Enter the 4-digit OTP sent to<br />
+                Enter the {otpLength}-digit OTP sent to<br />
                 <span className="font-bold text-gray-900">+91 {mobile}</span>
               </p>
             </div>
 
             {/* OTP Input Boxes */}
-            <div className="flex justify-center gap-3 mb-6">
-              {otp.map((digit, index) => (
+            <div className="flex justify-center gap-2.5 mb-6">
+              {Array.from({ length: otpLength }).map((_, index) => (
                 <Input
                   key={index}
                   ref={(el) => { inputRefs.current[index] = el; }}
                   type="text"
                   inputMode="numeric"
                   maxLength={1}
-                  value={digit}
+                  value={otp[index] || ''}
                   onChange={(e) => handleOtpChange(index, e.target.value)}
                   onKeyDown={(e) => handleOtpKeyDown(index, e)}
-                  className="w-14 h-14 text-center text-xl font-bold rounded-xl border-2 border-gray-200 focus:border-[#0C831F] focus:ring-[#0C831F] transition-colors"
+                  className={`w-11 h-13 text-center text-xl font-bold rounded-xl border-2 border-gray-200 focus:border-[#0C831F] focus:ring-[#0C831F] transition-colors ${otpLength === 6 ? 'sm:w-9' : ''}`}
                   disabled={loading}
                 />
               ))}
@@ -275,19 +388,13 @@ export default function LoginPage() {
               </div>
             )}
 
-            {smsFailed && !isDemo && (
-              <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 mb-4 text-center">
-                <p className="text-xs text-orange-700">SMS could not be sent. Please try Resend OTP.</p>
-              </div>
-            )}
-
             {error && <p className="text-sm text-red-500 text-center mb-4">{error}</p>}
 
             {/* Verify Button */}
             <Button
               onClick={handleVerifyOTP}
               className="w-full bg-[#0C831F] hover:bg-[#0a6e1a] text-white font-bold h-12 rounded-xl mb-3"
-              disabled={loading || otp.some(d => !d)}
+              disabled={loading || otp.slice(0, otpLength).some(d => !d)}
             >
               {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <>Verify OTP <ArrowRight className="h-4 w-4 ml-2" /></>}
             </Button>
@@ -295,7 +402,7 @@ export default function LoginPage() {
             {/* Resend / Change Number */}
             <div className="flex items-center justify-between mt-4">
               <button
-                onClick={() => { setStep('details'); setOtp(['', '', '', '']); setError(''); }}
+                onClick={() => { setStep('details'); setOtp(Array(otpLength).fill('')); setError(''); }}
                 className="text-sm text-[#0C831F] font-medium hover:underline"
               >
                 Change Number
