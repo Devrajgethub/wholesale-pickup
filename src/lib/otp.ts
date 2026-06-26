@@ -5,8 +5,9 @@ const OTP_EXPIRY_MS = 5 * 60 * 1000; // 5 minutes
 const MAX_ATTEMPTS = 3;
 const RATE_LIMIT_MS = 60000; // 60 seconds between OTPs
 
-// Demo mode: set DEMO_MODE=false in Vercel env to use real SMS
-const DEMO_MODE = process.env.DEMO_MODE !== 'false';
+// Real mode when FAST2SMS_API_KEY is set. Otherwise demo mode.
+const HAS_SMS_KEY = !!process.env.FAST2SMS_API_KEY;
+const DEMO_MODE = !HAS_SMS_KEY;
 
 export function generateOTP(): string {
   if (DEMO_MODE) return '1234';
