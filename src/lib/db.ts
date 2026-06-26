@@ -1,12 +1,10 @@
 import { PrismaClient } from '@prisma/client';
 import { PrismaLibSQL } from '@prisma/adapter-libsql';
-import { createClient, type Client } from '@libsql/client';
 
 // Global cache for PrismaClient - works in BOTH development and production
 // On Vercel (serverless), this caches within a single function instance's lifetime
 const globalForDb = globalThis as unknown as {
   prisma: PrismaClient | undefined;
-  libsqlClient: Client | undefined;
 };
 
 function createDb(): PrismaClient {
@@ -19,19 +17,15 @@ function createDb(): PrismaClient {
   console.log('[DB] Has AUTH_TOKEN:', !!process.env.DATABASE_AUTH_TOKEN);
 
   if (isTurso) {
-    // Reuse libsql client if already created
-    if (!globalForDb.libsqlClient) {
-      console.log('[DB] Creating new LibSQL client for Turso...');
-      globalForDb.libsqlClient = createClient({
-        url: databaseUrl,
-        authToken: process.env.DATABASE_AUTH_TOKEN || '',
-      });
-    }
-
     // Reuse PrismaClient if already created
     if (!globalForDb.prisma) {
       console.log('[DB] Creating new PrismaClient with LibSQL adapter...');
-      const adapter = new PrismaLibSQL(globalForDb.libsqlClient);
+      // PrismaLibSQL is a FACTORY - pass config object, NOT a Client instance
+      // The factory internally calls createClient(config) in its connect() method
+      const adapter = new PrismaLibSQL({
+        url: databaseUrl,
+        authToken: process.env.DATABASE_AUTH_TOKEN || '',
+      });
       globalForDb.prisma = new PrismaClient({ adapter } as any);
     }
 
