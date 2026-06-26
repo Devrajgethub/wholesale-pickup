@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { PrismaLibSql } from '@prisma/adapter-libsql';
+import { PrismaLibSQL } from '@prisma/adapter-libsql';
 import { createClient, type Client } from '@libsql/client';
 
 // Global cache for PrismaClient - works in BOTH development and production
@@ -31,7 +31,7 @@ function createDb(): PrismaClient {
     // Reuse PrismaClient if already created
     if (!globalForDb.prisma) {
       console.log('[DB] Creating new PrismaClient with LibSQL adapter...');
-      const adapter = new PrismaLibSql(globalForDb.libsqlClient);
+      const adapter = new PrismaLibSQL(globalForDb.libsqlClient);
       globalForDb.prisma = new PrismaClient({ adapter } as any);
     }
 
