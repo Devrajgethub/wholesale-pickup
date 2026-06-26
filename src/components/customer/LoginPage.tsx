@@ -24,6 +24,7 @@ export default function LoginPage() {
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const confirmationRef = useRef<any>(null);
   const recaptchaVerifierRef = useRef<any>(null);
+  const recaptchaWidgetId = useRef<number | null>(null);
 
   // Firebase Phone Auth uses 6-digit OTP, demo uses 4-digit
   const useFirebase = typeof window !== 'undefined' && !!process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
@@ -68,16 +69,28 @@ export default function LoginPage() {
 
         if (!auth) throw new Error('Firebase not configured');
 
-        // Clear old reCAPTCHA properly (call .clear() then remove DOM)
+        // Reset old reCAPTCHA via grecaptcha API
+        if (recaptchaWidgetId.current !== null && typeof window !== 'undefined' && (window as any).grecaptcha) {
+          try { (window as any).grecaptcha.reset(recaptchaWidgetId.current); } catch {}
+        }
+        // Clear old verifier
         if (recaptchaVerifierRef.current) {
           try { recaptchaVerifierRef.current.clear(); } catch {}
           recaptchaVerifierRef.current = null;
+          recaptchaWidgetId.current = null;
         }
-        const container = document.getElementById('recaptcha-container');
-        if (container) container.innerHTML = '';
 
-        // Create invisible reCAPTCHA verifier
-        const verifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+        // Create a FRESH container with unique ID each time
+        const uniqueId = 'recaptcha-' + Date.now();
+        const oldContainer = document.getElementById('recaptcha-container');
+        if (oldContainer) {
+          const newDiv = document.createElement('div');
+          newDiv.id = uniqueId;
+          oldContainer.appendChild(newDiv);
+        }
+
+        // Create invisible reCAPTCHA verifier in the new container
+        const verifier = new RecaptchaVerifier(auth, uniqueId, {
           size: 'invisible',
           callback: () => {},
           'expired-callback': () => {
@@ -85,9 +98,13 @@ export default function LoginPage() {
             setLoading(false);
           },
         });
-        recaptchaVerifierRef.current = verifier;
 
+        // Render to get widget ID, then send OTP
         try {
+          const widgetId = await verifier.render();
+          recaptchaWidgetId.current = widgetId;
+          recaptchaVerifierRef.current = verifier;
+
           const result = await signInWithPhoneNumber(auth, `+91${mobile}`, verifier);
           confirmationRef.current = result;
           setOtpSent(true);
@@ -96,8 +113,6 @@ export default function LoginPage() {
           setStep('otp');
         } catch (firebaseError: any) {
           console.error('[Firebase OTP Send Error]:', firebaseError?.code, firebaseError?.message);
-          verifier.clear();
-          recaptchaVerifierRef.current = null;
 
           // Show FULL error detail so we can debug
           const errCode = firebaseError?.code || 'no-code';
@@ -112,6 +127,8 @@ export default function LoginPage() {
             setError('Security check failed. Please refresh and try again.');
           } else if (firebaseError.code === 'auth/unauthorized-domain') {
             setError('Domain not authorized in Firebase. Add wholesale-pickup.vercel.app in Firebase Console → Auth → Settings → Authorized domains.');
+          } else if (firebaseError.code === 'auth/operation-not-allowed') {
+            setError('SMS region not enabled. Firebase Console → Authentication → Settings → SMS region policy → Allow India.');
           } else {
             setError(`OTP failed: ${debugInfo}`);
           }
