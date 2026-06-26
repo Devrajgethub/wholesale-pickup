@@ -4,7 +4,7 @@ import { db } from '@/lib/db';
 
 export async function POST(req: NextRequest) {
   try {
-    // Ensure Otp table exists (needed for Turso/Vercel)
+    // Ensure Otp table exists in Turso
     await ensureOtpTable();
 
     const { mobile, otp, name, businessName } = await req.json();
@@ -34,7 +34,6 @@ export async function POST(req: NextRequest) {
         },
       });
     } else if (name) {
-      // Update name if provided
       user = await db.user.update({
         where: { id: user.id },
         data: { name, businessName: businessName || user.businessName },
@@ -50,6 +49,9 @@ export async function POST(req: NextRequest) {
     });
   } catch (error: any) {
     console.error('[API /otp/verify] Error:', error?.message || error);
-    return NextResponse.json({ error: 'Verification failed', detail: error?.message }, { status: 500 });
+    return NextResponse.json({
+      error: 'Verification failed',
+      detail: error?.message || 'Unknown error',
+    }, { status: 500 });
   }
 }

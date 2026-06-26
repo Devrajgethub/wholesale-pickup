@@ -1,4 +1,5 @@
 import { db } from './db';
+import { createClient } from '@libsql/client';
 
 const OTP_EXPIRY_MS = 5 * 60 * 1000; // 5 minutes
 const MAX_ATTEMPTS = 3;
@@ -62,22 +63,16 @@ export async function verifyOTP(mobile: string, inputOtp: string): Promise<{ suc
     return { success: false, message: `Invalid OTP. ${MAX_ATTEMPTS - newAttempts} attempts remaining.` };
   }
 
-  // Success - mark as verified and delete
+  // Success - delete the OTP
   await db.otp.delete({ where: { id: record.id } });
   return { success: true, message: 'OTP verified successfully!' };
 }
 
 export async function sendOTPSMS(mobile: string, otp: string): Promise<{ sent: boolean; message: string }> {
-  const fullMobile = mobile.startsWith('+') ? mobile : `+91${mobile}`;
-
   if (DEMO_MODE) {
-    console.log(`[OTP DEMO] Mobile: ${fullMobile}, OTP: ${otp}`);
+    console.log(`[OTP DEMO] Mobile: ${mobile}, OTP: ${otp}`);
     return { sent: true, message: 'Demo mode: OTP is 1234' };
   }
-
-  // Real SMS integration - uncomment and configure one:
-  // MSG91 / Fast2SMS / Twilio code here (see previous version)
-
   return { sent: false, message: 'No SMS service configured' };
 }
 
@@ -97,14 +92,37 @@ export async function getRateLimitInfo(mobile: string): Promise<{ canSend: boole
   return { canSend: true, waitSeconds: 0 };
 }
 
-// Create Otp table in Turso if it doesn't exist (for Vercel)
+// Create Otp table directly via @libsql/client (Prisma adapter doesn't support DDL)
+let tableEnsured = false;
+
 export async function ensureOtpTable(): Promise<void> {
+  if (tableEnsured) return;
+
+  const databaseUrl = process.env.DATABASE_URL || '';
+  if (!databaseUrl.startsWith('libsql://')) {
+    // Local SQLite - table already exists via prisma db push
+    tableEnsured = true;
+    return;
+  }
+
   try {
+    // Try Prisma first (table might already exist)
     await db.otp.count();
+    tableEnsured = true;
     console.log('[OTP] Otp table exists');
+    return;
   } catch {
-    console.log('[OTP] Otp table missing, creating...');
-    await db.$executeRawUnsafe(`
+    // Table doesn't exist - create it via direct libsql client
+    console.log('[OTP] Creating Otp table via direct libsql client...');
+  }
+
+  try {
+    const client = createClient({
+      url: databaseUrl,
+      authToken: process.env.DATABASE_AUTH_TOKEN || '',
+    });
+
+    await client.execute(`
       CREATE TABLE IF NOT EXISTS "Otp" (
         "id" TEXT NOT NULL PRIMARY KEY,
         "mobile" TEXT NOT NULL,
@@ -113,9 +131,15 @@ export async function ensureOtpTable(): Promise<void> {
         "expiresAt" DATETIME NOT NULL,
         "attempts" INTEGER NOT NULL DEFAULT 0,
         "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
-      );
-      CREATE INDEX IF NOT EXISTS "Otp_mobile_idx" ON "Otp"("mobile");
+      )
     `);
-    console.log('[OTP] Otp table created');
+
+    await client.execute(`CREATE INDEX IF NOT EXISTS "Otp_mobile_idx" ON "Otp"("mobile")`);
+
+    console.log('[OTP] Otp table created successfully');
+    tableEnsured = true;
+  } catch (e: any) {
+    console.error('[OTP] Failed to create Otp table:', e?.message);
+    throw new Error('Failed to create OTP table: ' + (e?.message || 'Unknown error'));
   }
 }

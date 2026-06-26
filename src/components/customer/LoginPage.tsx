@@ -54,7 +54,8 @@ export default function LoginPage() {
           setLoading(false);
           return;
         }
-        throw new Error(data.error || 'Failed to send OTP');
+        const detail = data.detail ? ` (${data.detail})` : '';
+        throw new Error((data.error || 'Failed to send OTP') + detail);
       }
 
       setOtpSent(true);
@@ -88,7 +89,8 @@ export default function LoginPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || 'OTP verification failed');
+        const detail = data.detail ? ` (${data.detail})` : '';
+        setError(data.error + detail);
         setLoading(false);
         return;
       }

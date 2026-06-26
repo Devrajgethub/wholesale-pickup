@@ -3,7 +3,7 @@ import { generateOTP, storeOTP, sendOTPSMS, getRateLimitInfo, ensureOtpTable } f
 
 export async function POST(req: NextRequest) {
   try {
-    // Ensure Otp table exists (needed for Turso/Vercel)
+    // Ensure Otp table exists in Turso
     await ensureOtpTable();
 
     const { mobile } = await req.json();
@@ -37,6 +37,9 @@ export async function POST(req: NextRequest) {
     });
   } catch (error: any) {
     console.error('[API /otp/send] Error:', error?.message || error);
-    return NextResponse.json({ error: 'Failed to send OTP', detail: error?.message }, { status: 500 });
+    return NextResponse.json({
+      error: 'Failed to send OTP',
+      detail: error?.message || 'Unknown error',
+    }, { status: 500 });
   }
 }
