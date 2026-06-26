@@ -5,7 +5,7 @@ const OTP_EXPIRY_MS = 5 * 60 * 1000; // 5 minutes
 const MAX_ATTEMPTS = 3;
 const RATE_LIMIT_MS = 60000; // 60 seconds between OTPs
 
-// Demo mode: OTP is always 1234 for testing
+// Demo mode: set DEMO_MODE=false in Vercel env to use real SMS
 const DEMO_MODE = process.env.DEMO_MODE !== 'false';
 
 export function generateOTP(): string {
@@ -68,12 +68,56 @@ export async function verifyOTP(mobile: string, inputOtp: string): Promise<{ suc
   return { success: true, message: 'OTP verified successfully!' };
 }
 
+// ===== REAL SMS via Fast2SMS =====
+async function sendFast2SMS(mobile: string, otp: string): Promise<{ sent: boolean; message: string }> {
+  const apiKey = process.env.FAST2SMS_API_KEY;
+  if (!apiKey) {
+    console.error('[OTP] FAST2SMS_API_KEY not set');
+    return { sent: false, message: 'SMS service not configured' };
+  }
+
+  try {
+    const response = await fetch('https://www.fast2sms.com/dev/bulkV2', {
+      method: 'POST',
+      headers: {
+        'authorization': apiKey,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        route: 'otp',
+        variables_values: otp,
+        numbers: mobile,
+        flash: 0,
+      }),
+    });
+
+    const data = await response.json();
+    console.log('[OTP] Fast2SMS response:', JSON.stringify(data));
+
+    if (data.return === true) {
+      return { sent: true, message: 'OTP sent successfully!' };
+    } else {
+      console.error('[OTP] Fast2SMS error:', data.message);
+      return { sent: false, message: data.message || 'Failed to send SMS' };
+    }
+  } catch (e: any) {
+    console.error('[OTP] Fast2SMS request failed:', e?.message);
+    return { sent: false, message: 'SMS service error' };
+  }
+}
+
 export async function sendOTPSMS(mobile: string, otp: string): Promise<{ sent: boolean; message: string }> {
   if (DEMO_MODE) {
     console.log(`[OTP DEMO] Mobile: ${mobile}, OTP: ${otp}`);
     return { sent: true, message: 'Demo mode: OTP is 1234' };
   }
-  return { sent: false, message: 'No SMS service configured' };
+
+  // Real mode - send via Fast2SMS
+  return sendFast2SMS(mobile, otp);
+}
+
+export function isDemoMode(): boolean {
+  return DEMO_MODE;
 }
 
 export async function getRateLimitInfo(mobile: string): Promise<{ canSend: boolean; waitSeconds: number }> {

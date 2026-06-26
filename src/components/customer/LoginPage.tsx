@@ -21,6 +21,7 @@ export default function LoginPage() {
   const [otpSent, setOtpSent] = useState(false);
   const [resendTimer, setResendTimer] = useState(0);
   const [isDemo, setIsDemo] = useState(false);
+  const [smsFailed, setSmsFailed] = useState(false);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   // Resend countdown timer
@@ -60,6 +61,7 @@ export default function LoginPage() {
 
       setOtpSent(true);
       setIsDemo(data.demo || false);
+      setSmsFailed(data.smsFailed || false);
       setResendTimer(60);
       setStep('otp');
     } catch (e: any) {
@@ -148,10 +150,10 @@ export default function LoginPage() {
   const handleResend = () => {
     if (resendTimer > 0) return;
     setOtp(['', '', '', '']);
-    setStep('details');
-    setOtpSent(false);
+    setSmsFailed(false);
     setError('');
-    inputRefs.current[0]?.focus();
+    // Re-send OTP directly instead of going back
+    handleSendOTP();
   };
 
   return (
@@ -270,6 +272,12 @@ export default function LoginPage() {
             {isDemo && (
               <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4 text-center">
                 <p className="text-xs text-yellow-700 font-medium">Demo Mode: Your OTP is <span className="text-lg font-bold">1234</span></p>
+              </div>
+            )}
+
+            {smsFailed && !isDemo && (
+              <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 mb-4 text-center">
+                <p className="text-xs text-orange-700">SMS could not be sent. Please try Resend OTP.</p>
               </div>
             )}
 

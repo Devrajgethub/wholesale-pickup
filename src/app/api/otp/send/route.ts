@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { generateOTP, storeOTP, sendOTPSMS, getRateLimitInfo, ensureOtpTable } from '@/lib/otp';
+import { generateOTP, storeOTP, sendOTPSMS, getRateLimitInfo, ensureOtpTable, isDemoMode } from '@/lib/otp';
 
 export async function POST(req: NextRequest) {
   try {
@@ -25,15 +25,28 @@ export async function POST(req: NextRequest) {
     const otp = generateOTP();
     await storeOTP(mobile, otp);
 
-    // Send OTP via SMS (demo mode: OTP is 1234)
+    // Send OTP via SMS
     const result = await sendOTPSMS(mobile, otp);
 
-    console.log(`[OTP SEND] Mobile: ${mobile}, Sent: ${result.sent}`);
+    console.log(`[OTP SEND] Mobile: ${mobile}, Sent: ${result.sent}, Demo: ${isDemoMode()}`);
+
+    // If SMS failed in real mode, still return success (OTP is stored, user can try again)
+    // But log a warning
+    if (!result.sent && !isDemoMode()) {
+      console.error(`[OTP SEND] SMS failed for ${mobile}: ${result.message}`);
+      // Still return success so user gets to OTP screen - they can resend if needed
+      return NextResponse.json({
+        success: true,
+        message: 'OTP generated. If you did not receive SMS, please resend.',
+        demo: false,
+        smsFailed: true,
+      });
+    }
 
     return NextResponse.json({
       success: true,
       message: result.message,
-      demo: result.message.includes('Demo mode'),
+      demo: isDemoMode(),
     });
   } catch (error: any) {
     console.error('[API /otp/send] Error:', error?.message || error);
