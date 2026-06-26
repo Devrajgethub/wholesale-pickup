@@ -23,6 +23,7 @@ export default function LoginPage() {
   const [isDemo, setIsDemo] = useState(false);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const confirmationRef = useRef<any>(null);
+  const recaptchaVerifierRef = useRef<any>(null);
 
   // Firebase Phone Auth uses 6-digit OTP, demo uses 4-digit
   const useFirebase = typeof window !== 'undefined' && !!process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
@@ -44,8 +45,9 @@ export default function LoginPage() {
   // Clean up reCAPTCHA on unmount
   useEffect(() => {
     return () => {
-      const container = document.getElementById('recaptcha-container');
-      if (container) container.innerHTML = '';
+      if (recaptchaVerifierRef.current) {
+        try { recaptchaVerifierRef.current.clear(); } catch {}
+      }
     };
   }, []);
 
@@ -66,7 +68,11 @@ export default function LoginPage() {
 
         if (!auth) throw new Error('Firebase not configured');
 
-        // Clear old reCAPTCHA
+        // Clear old reCAPTCHA properly (call .clear() then remove DOM)
+        if (recaptchaVerifierRef.current) {
+          try { recaptchaVerifierRef.current.clear(); } catch {}
+          recaptchaVerifierRef.current = null;
+        }
         const container = document.getElementById('recaptcha-container');
         if (container) container.innerHTML = '';
 
@@ -79,6 +85,7 @@ export default function LoginPage() {
             setLoading(false);
           },
         });
+        recaptchaVerifierRef.current = verifier;
 
         try {
           const result = await signInWithPhoneNumber(auth, `+91${mobile}`, verifier);
@@ -90,6 +97,7 @@ export default function LoginPage() {
         } catch (firebaseError: any) {
           console.error('[Firebase OTP Send Error]:', firebaseError?.code, firebaseError?.message);
           verifier.clear();
+          recaptchaVerifierRef.current = null;
 
           // Show FULL error detail so we can debug
           const errCode = firebaseError?.code || 'no-code';
