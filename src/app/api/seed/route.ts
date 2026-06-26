@@ -3,10 +3,16 @@ import { NextResponse } from 'next/server';
 
 export async function POST() {
   try {
+    console.log('[SEED] Starting database seed...');
+
     // Only seed if no categories exist (idempotent)
     const existing = await db.category.count();
+    console.log('[SEED] Existing categories:', existing);
+
     if (existing > 0) {
-      return NextResponse.json({ success: true, message: 'Database already seeded' });
+      const productCount = await db.product.count();
+      console.log('[SEED] Database already seeded with', existing, 'categories and', productCount, 'products');
+      return NextResponse.json({ success: true, message: 'Database already seeded', categories: existing, products: productCount });
     }
 
     // Clear existing data
@@ -15,6 +21,7 @@ export async function POST() {
     await db.product.deleteMany();
     await db.category.deleteMany();
     await db.user.deleteMany();
+    console.log('[SEED] Cleared existing data');
 
     // Create admin user
     await db.user.create({
@@ -25,6 +32,7 @@ export async function POST() {
         isAdmin: true,
       },
     });
+    console.log('[SEED] Created admin user');
 
     // Create categories
     const categories = await Promise.all([
@@ -37,6 +45,7 @@ export async function POST() {
       db.category.create({ data: { name: 'Snacks & Namkeen', slug: 'snacks-namkeen', image: '/categories/snacks.png', sortOrder: 7 } }),
       db.category.create({ data: { name: 'Cleaning Products', slug: 'cleaning', image: '/categories/cleaning.png', sortOrder: 8 } }),
     ]);
+    console.log('[SEED] Created', categories.length, 'categories');
 
     // Create products
     const productsData = [
@@ -71,6 +80,7 @@ export async function POST() {
       { name: 'Vim Dishwash Bar', category: categories[7], unit: '1 Box - 48 Bars (140g)', price: 480, mrp: 560, stock: 35, minQty: 2, featured: false, bestSelling: true },
     ];
 
+    let createdCount = 0;
     for (const p of productsData) {
       const slug = p.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
       await db.product.create({
@@ -88,11 +98,26 @@ export async function POST() {
           categoryId: p.category.id,
         },
       });
+      createdCount++;
     }
 
-    return NextResponse.json({ success: true, message: 'Database seeded successfully' });
-  } catch (error) {
-    console.error('Seed error:', error);
-    return NextResponse.json({ success: false, error: 'Failed to seed database' }, { status: 500 });
+    console.log('[SEED] Created', createdCount, 'products');
+    console.log('[SEED] Database seed completed successfully!');
+
+    return NextResponse.json({
+      success: true,
+      message: 'Database seeded successfully',
+      categories: categories.length,
+      products: createdCount,
+    });
+  } catch (error: any) {
+    console.error('[SEED] FATAL ERROR:', error?.message || error);
+    console.error('[SEED] Full error:', error);
+    return NextResponse.json({
+      success: false,
+      error: 'Failed to seed database',
+      detail: error?.message,
+      stack: error?.stack,
+    }, { status: 500 });
   }
 }

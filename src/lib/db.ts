@@ -1,34 +1,52 @@
 import { PrismaClient } from '@prisma/client';
 import { PrismaLibSql } from '@prisma/adapter-libsql';
-import { createClient } from '@libsql/client';
+import { createClient, type Client } from '@libsql/client';
+
+// Global cache for PrismaClient - works in BOTH development and production
+// On Vercel (serverless), this caches within a single function instance's lifetime
+const globalForDb = globalThis as unknown as {
+  prisma: PrismaClient | undefined;
+  libsqlClient: Client | undefined;
+};
 
 function createDb(): PrismaClient {
   const databaseUrl = process.env.DATABASE_URL || '';
   const isTurso = databaseUrl.startsWith('libsql://');
 
+  console.log('[DB] Initializing database connection...');
+  console.log('[DB] DATABASE_URL prefix:', databaseUrl.substring(0, 20) + '...');
+  console.log('[DB] Is Turso:', isTurso);
+  console.log('[DB] Has AUTH_TOKEN:', !!process.env.DATABASE_AUTH_TOKEN);
+
   if (isTurso) {
-    const libsql = createClient({
-      url: databaseUrl,
-      authToken: process.env.DATABASE_AUTH_TOKEN || undefined,
-    });
-    const adapter = new PrismaLibSql(libsql);
-    return new PrismaClient({ adapter } as any);
+    // Reuse libsql client if already created
+    if (!globalForDb.libsqlClient) {
+      console.log('[DB] Creating new LibSQL client for Turso...');
+      globalForDb.libsqlClient = createClient({
+        url: databaseUrl,
+        authToken: process.env.DATABASE_AUTH_TOKEN || '',
+      });
+    }
+
+    // Reuse PrismaClient if already created
+    if (!globalForDb.prisma) {
+      console.log('[DB] Creating new PrismaClient with LibSQL adapter...');
+      const adapter = new PrismaLibSql(globalForDb.libsqlClient);
+      globalForDb.prisma = new PrismaClient({ adapter } as any);
+    }
+
+    return globalForDb.prisma;
   }
 
   // Standard SQLite (local dev)
-  const globalForPrisma = globalThis as unknown as {
-    prisma: PrismaClient | undefined
-  };
-
-  const prisma =
-    globalForPrisma.prisma ??
-    new PrismaClient({
-      log: process.env.NODE_ENV === 'development' ? ['error'] : [],
+  if (!globalForDb.prisma) {
+    console.log('[DB] Creating new PrismaClient for local SQLite...');
+    globalForDb.prisma = new PrismaClient({
+      log: ['error', 'warn'],
     });
+  }
 
-  if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
-
-  return prisma;
+  return globalForDb.prisma;
 }
 
 export const db = createDb();

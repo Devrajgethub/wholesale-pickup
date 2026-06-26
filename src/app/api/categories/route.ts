@@ -9,8 +9,9 @@ export async function GET() {
       include: { _count: { select: { products: { where: { isAvailable: true } } } } },
     });
     return NextResponse.json(categories);
-  } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch categories' }, { status: 500 });
+  } catch (error: any) {
+    console.error('[API /categories GET] Error:', error?.message || error);
+    return NextResponse.json({ error: 'Failed to fetch categories', detail: error?.message }, { status: 500 });
   }
 }
 
@@ -30,8 +31,9 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json(category, { status: 201 });
-  } catch (error) {
-    return NextResponse.json({ error: 'Failed to create category' }, { status: 500 });
+  } catch (error: any) {
+    console.error('[API /categories POST] Error:', error?.message || error);
+    return NextResponse.json({ error: 'Failed to create category', detail: error?.message }, { status: 500 });
   }
 }
 
@@ -51,8 +53,9 @@ export async function PUT(req: Request) {
     });
 
     return NextResponse.json(category);
-  } catch (error) {
-    return NextResponse.json({ error: 'Failed to update category' }, { status: 500 });
+  } catch (error: any) {
+    console.error('[API /categories PUT] Error:', error?.message || error);
+    return NextResponse.json({ error: 'Failed to update category', detail: error?.message }, { status: 500 });
   }
 }
 
@@ -65,7 +68,8 @@ export async function DELETE(req: Request) {
     await db.product.deleteMany({ where: { categoryId: id } });
     await db.category.delete({ where: { id } });
     return NextResponse.json({ success: true });
-  } catch (error) {
-    return NextResponse.json({ error: 'Failed to delete category' }, { status: 500 });
+  } catch (error: any) {
+    console.error('[API /categories DELETE] Error:', error?.message || error);
+    return NextResponse.json({ error: 'Failed to delete category', detail: error?.message }, { status: 500 });
   }
 }

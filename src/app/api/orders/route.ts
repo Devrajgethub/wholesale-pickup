@@ -23,8 +23,9 @@ export async function GET(req: NextRequest) {
     });
 
     return NextResponse.json(orders);
-  } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch orders' }, { status: 500 });
+  } catch (error: any) {
+    console.error('[API /orders GET] Error:', error?.message || error);
+    return NextResponse.json({ error: 'Failed to fetch orders', detail: error?.message }, { status: 500 });
   }
 }
 
@@ -83,9 +84,9 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json(order, { status: 201 });
-  } catch (error) {
-    console.error('Create order error:', error);
-    return NextResponse.json({ error: 'Failed to create order' }, { status: 500 });
+  } catch (error: any) {
+    console.error('[API /orders POST] Error:', error?.message || error);
+    return NextResponse.json({ error: 'Failed to create order', detail: error?.message }, { status: 500 });
   }
 }
 
@@ -115,8 +116,8 @@ export async function PUT(req: NextRequest) {
     });
 
     return NextResponse.json(order);
-  } catch (error) {
-    console.error('Update order error:', error);
-    return NextResponse.json({ error: 'Failed to update order' }, { status: 500 });
+  } catch (error: any) {
+    console.error('[API /orders PUT] Error:', error?.message || error);
+    return NextResponse.json({ error: 'Failed to update order', detail: error?.message }, { status: 500 });
   }
 }

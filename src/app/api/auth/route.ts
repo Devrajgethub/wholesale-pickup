@@ -27,9 +27,9 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json(user);
-  } catch (error) {
-    console.error('Auth error:', error);
-    return NextResponse.json({ error: 'Auth failed' }, { status: 500 });
+  } catch (error: any) {
+    console.error('[API /auth POST] Error:', error?.message || error);
+    return NextResponse.json({ error: 'Auth failed', detail: error?.message }, { status: 500 });
   }
 }
 
@@ -48,7 +48,8 @@ export async function GET(req: NextRequest) {
     });
 
     return NextResponse.json(user);
-  } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch user' }, { status: 500 });
+  } catch (error: any) {
+    console.error('[API /auth GET] Error:', error?.message || error);
+    return NextResponse.json({ error: 'Failed to fetch user', detail: error?.message }, { status: 500 });
   }
 }

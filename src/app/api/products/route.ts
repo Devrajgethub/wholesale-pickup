@@ -35,8 +35,9 @@ export async function GET(req: NextRequest) {
     });
 
     return NextResponse.json(products);
-  } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch products' }, { status: 500 });
+  } catch (error: any) {
+    console.error('[API /products GET] Error:', error?.message || error);
+    return NextResponse.json({ error: 'Failed to fetch products', detail: error?.message }, { status: 500 });
   }
 }
 
@@ -67,9 +68,9 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json(product, { status: 201 });
-  } catch (error) {
-    console.error('Create product error:', error);
-    return NextResponse.json({ error: 'Failed to create product' }, { status: 500 });
+  } catch (error: any) {
+    console.error('[API /products POST] Error:', error?.message || error);
+    return NextResponse.json({ error: 'Failed to create product', detail: error?.message }, { status: 500 });
   }
 }
 
@@ -104,9 +105,9 @@ export async function PUT(req: NextRequest) {
     });
 
     return NextResponse.json(product);
-  } catch (error) {
-    console.error('Update product error:', error);
-    return NextResponse.json({ error: 'Failed to update product' }, { status: 500 });
+  } catch (error: any) {
+    console.error('[API /products PUT] Error:', error?.message || error);
+    return NextResponse.json({ error: 'Failed to update product', detail: error?.message }, { status: 500 });
   }
 }
 
@@ -123,7 +124,8 @@ export async function DELETE(req: NextRequest) {
     await db.product.delete({ where: { id } });
 
     return NextResponse.json({ success: true });
-  } catch (error) {
-    return NextResponse.json({ error: 'Failed to delete product' }, { status: 500 });
+  } catch (error: any) {
+    console.error('[API /products DELETE] Error:', error?.message || error);
+    return NextResponse.json({ error: 'Failed to delete product', detail: error?.message }, { status: 500 });
   }
 }
