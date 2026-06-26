@@ -3,8 +3,8 @@ import { NextResponse } from 'next/server';
 
 // Real admin phone numbers
 const ADMIN_USERS = [
-  { name: 'Admin - Devraj', mobile: '9682022501', businessName: 'Wholesale Pickup', isAdmin: true },
-  { name: 'Admin - Partner', mobile: '7908117295', businessName: 'Wholesale Pickup', isAdmin: true },
+  { name: 'Admin - Devraj', mobile: '9682022501', businessName: 'Mitra Bros Mart', isAdmin: true },
+  { name: 'Admin - Partner', mobile: '7908117295', businessName: 'Mitra Bros Mart', isAdmin: true },
 ];
 
 export async function POST() {

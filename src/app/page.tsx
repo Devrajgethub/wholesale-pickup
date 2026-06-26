@@ -29,7 +29,7 @@ function Footer() {
               <div className="w-8 h-8 bg-yellow-400 rounded-lg flex items-center justify-center">
                 <span className="text-sm">🏪</span>
               </div>
-              <span className="font-bold text-white text-lg">WholesalePickup</span>
+              <span className="font-bold text-white text-lg">Mitra Bros Mart</span>
             </div>
             <p className="text-sm leading-relaxed">Your trusted wholesale partner. Order online, pick up at shop. Best prices guaranteed on all bulk orders.</p>
           </div>
@@ -45,15 +45,15 @@ function Footer() {
           <div>
             <h4 className="font-bold text-white mb-3">Contact Us</h4>
             <ul className="space-y-2 text-sm">
-              <li>ABC Wholesale Store</li>
-              <li>Phone: +91 98765 43210</li>
+              <li className="font-medium text-white">Mitra Bros Mart</li>
+              <li className="flex items-center gap-2"><span>📞</span> <a href="tel:+917908117295" className="hover:text-white transition-colors">+91 79081 17295</a></li>
               <li>Hours: 8:00 AM - 9:00 PM</li>
               <li>Mon - Sat</li>
             </ul>
           </div>
         </div>
         <div className="border-t border-gray-800 mt-8 pt-4 text-center text-xs">
-          <p>&copy; 2024 WholesalePickup. All rights reserved. | Blinkit Style Wholesale Order Booking</p>
+          <p>&copy; 2026 Mitra Bros Mart. All rights reserved.</p>
         </div>
       </div>
     </footer>

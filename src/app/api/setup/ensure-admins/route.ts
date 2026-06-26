@@ -3,8 +3,8 @@ import { NextResponse } from 'next/server';
 
 // Admin phone numbers - single source of truth
 const ADMIN_USERS = [
-  { name: 'Admin - Devraj', mobile: '9682022501', businessName: 'Wholesale Pickup' },
-  { name: 'Admin - Partner', mobile: '7908117295', businessName: 'Wholesale Pickup' },
+  { name: 'Admin - Devraj', mobile: '9682022501', businessName: 'Mitra Bros Mart' },
+  { name: 'Admin - Partner', mobile: '7908117295', businessName: 'Mitra Bros Mart' },
 ];
 
 export async function POST() {

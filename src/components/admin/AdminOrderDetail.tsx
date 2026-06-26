@@ -38,7 +38,7 @@ export default function AdminOrderDetail() {
   }
 
   const sendWhatsApp = () => {
-    const shopName = 'ABC Wholesale Store';
+    const shopName = 'Mitra Bros Mart';
     const payment = order.paymentMethod === 'Cash at Shop' ? 'Payment: Cash at Shop' : 'Payment: Online Paid';
     const message = `Hello ${order.customerName},\n\nAapka order #${order.orderId} ready hai.\n\nPlease shop par aakar apna naam ya order ID batayein.\nShop: ${shopName}\n${payment}\n\nThank you.`;
     window.open(`https://wa.me/91${order.mobile}?text=${encodeURIComponent(message)}`, '_blank');
@@ -163,7 +163,7 @@ export default function AdminOrderDetail() {
           <Button variant="outline" onClick={() => {
             const win = window.open('', '_blank');
             if (win) {
-              win.document.write(`<html><body style="font-family:monospace;max-width:300px;margin:0 auto;padding:20px;"><h2 style="text-align:center;">ABC Wholesale Store</h2><hr/><p><strong>Order:</strong> #${order.orderId}</p><p><strong>Customer:</strong> ${order.customerName}</p><p><strong>Mobile:</strong> ${order.mobile}</p><p><strong>Date:</strong> ${new Date(order.createdAt).toLocaleDateString('en-IN')}</p><hr/><table style="width:100%;border-collapse:collapse;"><tr style="border-bottom:1px solid #ccc;"><th style="text-align:left;">Item</th><th>Qty</th><th>Rate</th><th>Total</th></tr>${order.items.map(item => `<tr style="border-bottom:1px solid #eee;"><td>${item.productName}</td><td style="text-align:center;">${item.quantity}</td><td style="text-align:right;">₹${item.price}</td><td style="text-align:right;">₹${item.total}</td></tr>`).join('')}</table><hr/><p style="text-align:right;font-size:18px;font-weight:bold;">Total: ₹${order.totalAmount.toLocaleString()}</p><p><strong>Payment:</strong> ${order.paymentMethod}</p></body></html>`);
+              win.document.write(`<html><body style="font-family:monospace;max-width:300px;margin:0 auto;padding:20px;"><h2 style="text-align:center;">Mitra Bros Mart</h2><hr/><p><strong>Order:</strong> #${order.orderId}</p><p><strong>Customer:</strong> ${order.customerName}</p><p><strong>Mobile:</strong> ${order.mobile}</p><p><strong>Date:</strong> ${new Date(order.createdAt).toLocaleDateString('en-IN')}</p><hr/><table style="width:100%;border-collapse:collapse;"><tr style="border-bottom:1px solid #ccc;"><th style="text-align:left;">Item</th><th>Qty</th><th>Rate</th><th>Total</th></tr>${order.items.map(item => `<tr style="border-bottom:1px solid #eee;"><td>${item.productName}</td><td style="text-align:center;">${item.quantity}</td><td style="text-align:right;">₹${item.price}</td><td style="text-align:right;">₹${item.total}</td></tr>`).join('')}</table><hr/><p style="text-align:right;font-size:18px;font-weight:bold;">Total: ₹${order.totalAmount.toLocaleString()}</p><p><strong>Payment:</strong> ${order.paymentMethod}</p></body></html>`);
               win.document.close(); win.print();
             }
           }}>

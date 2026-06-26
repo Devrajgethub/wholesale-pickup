@@ -42,7 +42,7 @@ export default function Header() {
                 <Package className="h-5 w-5 text-green-900" />
               </div>
               <div className="hidden sm:block">
-                <h1 className="text-lg font-bold leading-tight">WholesalePickup</h1>
+                <h1 className="text-lg font-bold leading-tight">Mitra Bros Mart</h1>
                 <p className="text-[10px] text-green-200 leading-tight">Order Online, Pick at Shop</p>
               </div>
             </button>

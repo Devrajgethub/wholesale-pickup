@@ -14,9 +14,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "WholesalePickup - Order Online, Pick at Shop",
-  description: "Wholesale items at best price. Order online and pick up at your favorite wholesale store. No delivery charges!",
-  keywords: ["wholesale", "bulk order", "pickup", "wholesale store", "order booking"],
+  title: "Mitra Bros Mart - Order Online, Pick at Shop",
+  description: "Mitra Bros Mart - Wholesale items at best price. Order online and pick up at shop. No delivery charges!",
+  keywords: ["wholesale", "bulk order", "pickup", "wholesale store", "order booking", "mitra bros mart"],
   icons: {
     icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏪</text></svg>",
   },

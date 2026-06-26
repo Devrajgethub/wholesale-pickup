@@ -65,7 +65,7 @@ export default function AdminOrders() {
 
   const sendWhatsApp = (order: Order, e: React.MouseEvent) => {
     e.stopPropagation();
-    const shopName = 'ABC Wholesale Store';
+    const shopName = 'Mitra Bros Mart';
     const payment = order.paymentMethod === 'Cash at Shop'
       ? 'Payment: Cash at Shop'
       : 'Payment: Online Paid';
@@ -78,7 +78,7 @@ export default function AdminOrders() {
     e.stopPropagation();
     const printContent = `
       <html><body style="font-family: monospace; max-width: 300px; margin: 0 auto; padding: 20px;">
-        <h2 style="text-align:center;">ABC Wholesale Store</h2>
+        <h2 style="text-align:center;">Mitra Bros Mart</h2>
         <hr/>
         <p><strong>Order:</strong> #${order.orderId}</p>
         <p><strong>Customer:</strong> ${order.customerName}</p>
