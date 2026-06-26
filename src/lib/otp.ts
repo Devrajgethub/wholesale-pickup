@@ -93,22 +93,18 @@ export async function getRateLimitInfo(mobile: string): Promise<{ canSend: boole
 }
 
 // Create Otp table directly via @libsql/client (Prisma adapter doesn't support DDL)
-let tableEnsured = false;
+// NOTE: No in-memory caching - Vercel serverless creates new instances per request
 
 export async function ensureOtpTable(): Promise<void> {
-  if (tableEnsured) return;
-
   const databaseUrl = process.env.DATABASE_URL || '';
   if (!databaseUrl.startsWith('libsql://')) {
     // Local SQLite - table already exists via prisma db push
-    tableEnsured = true;
     return;
   }
 
   try {
     // Try Prisma first (table might already exist)
     await db.otp.count();
-    tableEnsured = true;
     console.log('[OTP] Otp table exists');
     return;
   } catch {
@@ -137,7 +133,6 @@ export async function ensureOtpTable(): Promise<void> {
     await client.execute(`CREATE INDEX IF NOT EXISTS "Otp_mobile_idx" ON "Otp"("mobile")`);
 
     console.log('[OTP] Otp table created successfully');
-    tableEnsured = true;
   } catch (e: any) {
     console.error('[OTP] Failed to create Otp table:', e?.message);
     throw new Error('Failed to create OTP table: ' + (e?.message || 'Unknown error'));

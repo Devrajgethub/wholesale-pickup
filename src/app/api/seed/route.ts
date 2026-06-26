@@ -1,6 +1,12 @@
 import { db } from '@/lib/db';
 import { NextResponse } from 'next/server';
 
+// Real admin phone numbers
+const ADMIN_USERS = [
+  { name: 'Admin - Devraj', mobile: '9682022501', businessName: 'Wholesale Pickup', isAdmin: true },
+  { name: 'Admin - Partner', mobile: '7908117295', businessName: 'Wholesale Pickup', isAdmin: true },
+];
+
 export async function POST() {
   try {
     console.log('[SEED] Starting database seed...');
@@ -12,7 +18,11 @@ export async function POST() {
     if (existing > 0) {
       const productCount = await db.product.count();
       console.log('[SEED] Database already seeded with', existing, 'categories and', productCount, 'products');
-      return NextResponse.json({ success: true, message: 'Database already seeded', categories: existing, products: productCount });
+
+      // Even if DB is already seeded, ensure admin users exist
+      await ensureAdminUsers();
+
+      return NextResponse.json({ success: true, message: 'Database already seeded', categories: existing, products: productCount, admins: ADMIN_USERS.map(a => a.mobile) });
     }
 
     // Clear existing data
@@ -23,16 +33,9 @@ export async function POST() {
     await db.user.deleteMany();
     console.log('[SEED] Cleared existing data');
 
-    // Create admin user
-    await db.user.create({
-      data: {
-        name: 'Shop Admin',
-        mobile: '9999999999',
-        businessName: 'ABC Wholesale Store',
-        isAdmin: true,
-      },
-    });
-    console.log('[SEED] Created admin user');
+    // Create admin users with real phone numbers
+    await ensureAdminUsers();
+    console.log('[SEED] Admin users ensured');
 
     // Create categories
     const categories = await Promise.all([
@@ -109,6 +112,7 @@ export async function POST() {
       message: 'Database seeded successfully',
       categories: categories.length,
       products: createdCount,
+      admins: ADMIN_USERS.map(a => a.mobile),
     });
   } catch (error: any) {
     console.error('[SEED] FATAL ERROR:', error?.message || error);
@@ -120,4 +124,48 @@ export async function POST() {
       stack: error?.stack,
     }, { status: 500 });
   }
+}
+
+// Ensure all admin users exist with correct isAdmin=true
+// This runs every time seed is called, even if DB is already seeded
+async function ensureAdminUsers() {
+  const results: string[] = [];
+
+  for (const admin of ADMIN_USERS) {
+    try {
+      const existing = await db.user.findUnique({ where: { mobile: admin.mobile } });
+
+      if (existing) {
+        // User exists - make sure isAdmin is true
+        if (!existing.isAdmin) {
+          await db.user.update({
+            where: { id: existing.id },
+            data: { isAdmin: true, name: admin.name, businessName: admin.businessName },
+          });
+          results.push(`${admin.mobile}: updated to admin`);
+          console.log(`[SEED] Updated user ${admin.mobile} to admin`);
+        } else {
+          results.push(`${admin.mobile}: already admin`);
+          console.log(`[SEED] User ${admin.mobile} already admin`);
+        }
+      } else {
+        // Create new admin user
+        await db.user.create({
+          data: {
+            name: admin.name,
+            mobile: admin.mobile,
+            businessName: admin.businessName,
+            isAdmin: true,
+          },
+        });
+        results.push(`${admin.mobile}: created as admin`);
+        console.log(`[SEED] Created admin user ${admin.mobile}`);
+      }
+    } catch (e: any) {
+      results.push(`${admin.mobile}: error - ${e?.message}`);
+      console.error(`[SEED] Failed to ensure admin ${admin.mobile}:`, e?.message);
+    }
+  }
+
+  console.log('[SEED] Admin users summary:', results.join(', '));
 }
