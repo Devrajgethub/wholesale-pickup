@@ -2,10 +2,18 @@ import { NextRequest, NextResponse } from 'next/server';
 import { verifyOTP, ensureOtpTable } from '@/lib/otp';
 import { db } from '@/lib/db';
 
+const hasFirebase = !!(process.env.NEXT_PUBLIC_FIREBASE_API_KEY && process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID);
+
 export async function POST(req: NextRequest) {
   try {
-    // Ensure Otp table exists in Turso
-    await ensureOtpTable();
+    // Skip Otp table setup if Firebase is configured
+    if (!hasFirebase) {
+      try {
+        await ensureOtpTable();
+      } catch (tableErr: any) {
+        console.error('[OTP VERIFY] Otp table setup failed (non-fatal):', tableErr?.message);
+      }
+    }
 
     const { mobile, otp, name, businessName } = await req.json();
 

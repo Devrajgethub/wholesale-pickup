@@ -1,10 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateOTP, storeOTP, sendOTPSMS, getRateLimitInfo, ensureOtpTable, isDemoMode } from '@/lib/otp';
 
+// Check if Firebase Phone Auth is available (env vars set on server)
+const hasFirebase = !!(process.env.NEXT_PUBLIC_FIREBASE_API_KEY && process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID);
+
 export async function POST(req: NextRequest) {
   try {
-    // Ensure Otp table exists in Turso
-    await ensureOtpTable();
+    // Skip Otp table setup if Firebase is configured (Firebase handles OTP)
+    if (!hasFirebase) {
+      // Ensure Otp table exists in Turso (non-fatal)
+      try {
+        await ensureOtpTable();
+      } catch (tableErr: any) {
+        console.error('[OTP SEND] Otp table setup failed (non-fatal):', tableErr?.message);
+      }
+    }
 
     const { mobile } = await req.json();
 
@@ -54,5 +64,22 @@ export async function POST(req: NextRequest) {
       error: 'Failed to send OTP',
       detail: error?.message || 'Unknown error',
     }, { status: 500 });
+  }
+}
+
+// Health check for debugging
+export async function GET() {
+  try {
+    const dbUrl = process.env.DATABASE_URL || 'NOT SET';
+    const hasToken = !!process.env.DATABASE_AUTH_TOKEN;
+    const firebaseReady = hasFirebase;
+    return NextResponse.json({
+      database_url_prefix: dbUrl.substring(0, 25) + '...',
+      has_auth_token: hasToken,
+      firebase_ready: firebaseReady,
+      demo_mode: isDemoMode(),
+    });
+  } catch (e: any) {
+    return NextResponse.json({ error: e?.message }, { status: 500 });
   }
 }
