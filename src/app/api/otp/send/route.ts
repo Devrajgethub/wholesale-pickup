@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { generateOTP, storeOTP, sendOTPSMS, getRateLimitInfo } from '@/lib/otp';
+import { generateOTP, storeOTP, sendOTPSMS, getRateLimitInfo, ensureOtpTable } from '@/lib/otp';
 
 export async function POST(req: NextRequest) {
   try {
+    // Ensure Otp table exists (needed for Turso/Vercel)
+    await ensureOtpTable();
+
     const { mobile } = await req.json();
 
     if (!mobile || mobile.length < 10) {
@@ -10,7 +13,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Check rate limit
-    const rateLimit = getRateLimitInfo(mobile);
+    const rateLimit = await getRateLimitInfo(mobile);
     if (!rateLimit.canSend) {
       return NextResponse.json({
         error: `Please wait ${rateLimit.waitSeconds} seconds before requesting a new OTP`,
@@ -20,12 +23,12 @@ export async function POST(req: NextRequest) {
 
     // Generate and store OTP
     const otp = generateOTP();
-    storeOTP(mobile, otp);
+    await storeOTP(mobile, otp);
 
     // Send OTP via SMS (demo mode: OTP is 1234)
     const result = await sendOTPSMS(mobile, otp);
 
-    console.log(`[OTP SEND] Mobile: ${mobile}, Sent: ${result.sent}, Mode: Demo`);
+    console.log(`[OTP SEND] Mobile: ${mobile}, Sent: ${result.sent}`);
 
     return NextResponse.json({
       success: true,
