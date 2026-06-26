@@ -1,15 +1,12 @@
 import { PrismaClient } from '@prisma/client';
+import { PrismaLibSql } from '@prisma/adapter-libsql';
+import { createClient } from '@libsql/client';
 
 function createDb(): PrismaClient {
   const databaseUrl = process.env.DATABASE_URL || '';
   const isTurso = databaseUrl.startsWith('libsql://');
 
   if (isTurso) {
-    // Turso / LibSQL for Vercel deployment - dynamic import to avoid build errors with SQLite
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { PrismaLibSql } = require('@prisma/adapter-libsql');
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { createClient } = require('@libsql/client');
     const libsql = createClient({
       url: databaseUrl,
       authToken: process.env.DATABASE_AUTH_TOKEN || undefined,
