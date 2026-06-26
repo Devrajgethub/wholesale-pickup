@@ -91,14 +91,21 @@ export default function LoginPage() {
           console.error('[Firebase OTP Send Error]:', firebaseError?.code, firebaseError?.message);
           verifier.clear();
 
+          // Show FULL error detail so we can debug
+          const errCode = firebaseError?.code || 'no-code';
+          const errMsg = firebaseError?.message || 'no-message';
+          const debugInfo = `[${errCode}] ${errMsg}`;
+
           if (firebaseError.code === 'auth/too-many-requests') {
             setError('Too many OTP requests. Please wait a few minutes and try again.');
           } else if (firebaseError.code === 'auth/invalid-phone-number') {
             setError('Invalid phone number format.');
           } else if (firebaseError.code === 'auth/captcha-check-failed') {
             setError('Security check failed. Please refresh and try again.');
+          } else if (firebaseError.code === 'auth/unauthorized-domain') {
+            setError('Domain not authorized in Firebase. Add wholesale-pickup.vercel.app in Firebase Console → Auth → Settings → Authorized domains.');
           } else {
-            setError('Failed to send OTP. Please try again.');
+            setError(`OTP failed: ${debugInfo}`);
           }
           setLoading(false);
           return;

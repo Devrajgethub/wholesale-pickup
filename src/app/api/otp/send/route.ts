@@ -78,6 +78,9 @@ export async function GET() {
       has_auth_token: hasToken,
       firebase_ready: firebaseReady,
       demo_mode: isDemoMode(),
+      firebase_api_key_set: !!process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+      firebase_project_id: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'NOT SET',
+      firebase_auth_domain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || 'NOT SET',
     });
   } catch (e: any) {
     return NextResponse.json({ error: e?.message }, { status: 500 });
