@@ -1,6 +1,6 @@
 'use client';
 
-import { useNavStore, useCartStore, useAuthStore, useDataStore } from '@/lib/store';
+import { useNavStore, useCartStore, useDataStore } from '@/lib/store';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -16,12 +16,10 @@ import { cn } from '@/lib/utils';
 export default function CheckoutPage() {
   const { navigate } = useNavStore();
   const { items, getTotal, clearCart } = useCartStore();
-  const { user, isLoggedIn } = useAuthStore();
   const { fetchOrders } = useDataStore();
 
-  const [name, setName] = useState(user?.name || '');
-  const [mobile, setMobile] = useState(user?.mobile || '');
-  const [businessName, setBusinessName] = useState(user?.businessName || '');
+  const [name, setName] = useState('');
+  const [mobile, setMobile] = useState('');
   const [pickupDate, setPickupDate] = useState<Date>();
   const [paymentMethod, setPaymentMethod] = useState('Cash at Shop');
   const [specialNote, setSpecialNote] = useState('');
@@ -29,6 +27,7 @@ export default function CheckoutPage() {
   const [error, setError] = useState('');
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [placedOrderId, setPlacedOrderId] = useState('');
+  const [businessName, setBusinessName] = useState('');
 
   const total = getTotal();
 
@@ -43,28 +42,7 @@ export default function CheckoutPage() {
     setLoading(true);
 
     try {
-      // Login/signup user
-      let userId = user?.id || null;
-      if (!isLoggedIn) {
-        const authRes = await fetch('/api/auth', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ mobile, name, businessName }),
-        });
-        if (authRes.ok) {
-          const authData = await authRes.json();
-          userId = authData.id;
-          useAuthStore.getState().login({
-            id: authData.id,
-            name: authData.name,
-            mobile: authData.mobile,
-            businessName: authData.businessName || '',
-            isAdmin: authData.isAdmin,
-          });
-        }
-      }
-
-      // Create order
+      // Create order directly (no login required)
       const orderRes = await fetch('/api/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -81,7 +59,7 @@ export default function CheckoutPage() {
           paymentMethod,
           specialNote,
           pickupDate: pickupDate ? format(pickupDate, 'yyyy-MM-dd') : '',
-          userId: userId,
+          userId: null,
         }),
       });
 

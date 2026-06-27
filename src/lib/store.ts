@@ -78,7 +78,7 @@ export type PageName =
   | 'order-success'
   | 'my-orders'
   | 'order-status'
-  | 'login'
+  | 'admin-login'
   | 'admin-dashboard'
   | 'admin-products'
   | 'admin-add-product'
@@ -159,23 +159,19 @@ export const useCartStore = create<CartState>((set, get) => ({
   getItemCount: () => get().items.reduce((sum, i) => sum + i.quantity, 0),
 }));
 
-// ============ AUTH STORE ============
+// ============ AUTH STORE (Admin-only password login) ============
 interface AuthState {
-  user: { id: string; name: string; mobile: string; businessName: string; isAdmin: boolean } | null;
-  isLoggedIn: boolean;
   isAdmin: boolean;
-  login: (user: { id: string; name: string; mobile: string; businessName: string; isAdmin: boolean }) => void;
-  logout: () => void;
-  toggleAdmin: () => void;
+  adminName: string;
+  adminLogin: (name: string) => void;
+  adminLogout: () => void;
 }
 
-export const useAuthStore = create<AuthState>((set, get) => ({
-  user: null,
-  isLoggedIn: false,
+export const useAuthStore = create<AuthState>((set) => ({
   isAdmin: false,
-  login: (user) => set({ user, isLoggedIn: true, isAdmin: user.isAdmin }),
-  logout: () => set({ user: null, isLoggedIn: false, isAdmin: false }),
-  toggleAdmin: () => set((state) => ({ isAdmin: !state.isAdmin })),
+  adminName: '',
+  adminLogin: (name) => set({ isAdmin: true, adminName: name }),
+  adminLogout: () => set({ isAdmin: false, adminName: '' }),
 }));
 
 // ============ DATA STORE ============

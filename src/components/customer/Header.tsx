@@ -1,7 +1,7 @@
 'use client';
 
 import { useNavStore, useCartStore, useAuthStore, useDataStore } from '@/lib/store';
-import { Search, ShoppingCart, User, Menu, X, Package, ArrowLeft } from 'lucide-react';
+import { Search, ShoppingCart, User, Menu, X, Package, ArrowLeft, ShieldCheck, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -10,7 +10,7 @@ import { useState } from 'react';
 export default function Header() {
   const { currentPage, navigate, setSearch, searchQuery } = useNavStore();
   const { items } = useCartStore();
-  const { isLoggedIn, isAdmin, user, logout, toggleAdmin } = useAuthStore();
+  const { isAdmin, adminName, adminLogout } = useAuthStore();
   const { fetchProducts } = useDataStore();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -37,7 +37,7 @@ export default function Header() {
                 <ArrowLeft className="h-5 w-5" />
               </Button>
             )}
-            <button onClick={() => { navigate('home'); }} className="flex items-center gap-2">
+            <button onClick={() => { if (isAdmin && !isCustomerPage) { navigate('admin-dashboard'); } else { navigate('home'); } }} className="flex items-center gap-2">
               <div className="w-9 h-9 bg-yellow-400 rounded-lg flex items-center justify-center">
                 <Package className="h-5 w-5 text-green-900" />
               </div>
@@ -68,7 +68,7 @@ export default function Header() {
               <Search className="h-5 w-5" />
             </Button>
 
-            {/* Cart */}
+            {/* Cart (customer pages only) */}
             {isCustomerPage && (
               <Button variant="ghost" size="icon" className="text-white hover:bg-white/10 relative" onClick={() => navigate('cart')}>
                 <ShoppingCart className="h-5 w-5" />
@@ -80,25 +80,29 @@ export default function Header() {
               </Button>
             )}
 
-            {/* User */}
-            {isLoggedIn ? (
+            {/* My Orders (customer pages) */}
+            {isCustomerPage && (
+              <Button variant="ghost" size="sm" className="text-white hover:bg-white/10 text-xs" onClick={() => navigate('my-orders')}>
+                <Package className="h-4 w-4 mr-1" />
+                <span className="hidden sm:inline">My Orders</span>
+              </Button>
+            )}
+
+            {/* Admin Login / Admin Logout */}
+            {isAdmin ? (
               <div className="flex items-center gap-1">
-                <Button variant="ghost" size="sm" className="text-white hover:bg-white/10 text-xs hidden sm:flex" onClick={() => navigate('my-orders')}>
-                  {user?.name}
-                </Button>
-                {user?.isAdmin && (
-                  <Button variant="ghost" size="icon" className="text-white hover:bg-white/10" onClick={toggleAdmin}>
-                    {isAdmin ? <Package className="h-5 w-5" /> : <User className="h-5 w-5" />}
-                  </Button>
-                )}
-                <Button variant="ghost" size="icon" className="text-white hover:bg-white/10" onClick={logout}>
-                  <X className="h-4 w-4" />
+                <span className="text-xs text-yellow-300 hidden sm:block px-2">
+                  <ShieldCheck className="h-3.5 w-3.5 inline mr-1" />
+                  {adminName}
+                </span>
+                <Button variant="ghost" size="icon" className="text-white hover:bg-white/10" onClick={() => { adminLogout(); navigate('home'); }}>
+                  <LogOut className="h-4 w-4" />
                 </Button>
               </div>
             ) : (
-              <Button variant="ghost" size="sm" className="text-white hover:bg-white/10" onClick={() => navigate('login')}>
-                <User className="h-4 w-4 mr-1" />
-                <span className="hidden sm:inline text-xs">Login</span>
+              <Button variant="ghost" size="sm" className="text-white hover:bg-white/10" onClick={() => navigate('admin-login')}>
+                <ShieldCheck className="h-4 w-4 mr-1" />
+                <span className="hidden sm:inline text-xs">Admin</span>
               </Button>
             )}
 
@@ -129,18 +133,16 @@ export default function Header() {
         {mobileMenuOpen && (
           <div className="pb-3 md:hidden border-t border-white/10">
             <div className="flex flex-col gap-1 pt-2">
-              {isLoggedIn ? (
-                <>
-                  <Button variant="ghost" className="justify-start text-white hover:bg-white/10" onClick={() => { navigate('my-orders'); setMobileMenuOpen(false); }}>
-                    My Orders
-                  </Button>
-                  <Button variant="ghost" className="justify-start text-white hover:bg-white/10" onClick={() => { logout(); setMobileMenuOpen(false); }}>
-                    Logout
-                  </Button>
-                </>
+              <Button variant="ghost" className="justify-start text-white hover:bg-white/10" onClick={() => { navigate('my-orders'); setMobileMenuOpen(false); }}>
+                <Package className="h-4 w-4 mr-2" /> My Orders
+              </Button>
+              {isAdmin ? (
+                <Button variant="ghost" className="justify-start text-white hover:bg-white/10" onClick={() => { adminLogout(); navigate('home'); setMobileMenuOpen(false); }}>
+                  <LogOut className="h-4 w-4 mr-2" /> Logout Admin
+                </Button>
               ) : (
-                <Button variant="ghost" className="justify-start text-white hover:bg-white/10" onClick={() => { navigate('login'); setMobileMenuOpen(false); }}>
-                  Login / Sign Up
+                <Button variant="ghost" className="justify-start text-white hover:bg-white/10" onClick={() => { navigate('admin-login'); setMobileMenuOpen(false); }}>
+                  <ShieldCheck className="h-4 w-4 mr-2" /> Admin Login
                 </Button>
               )}
             </div>

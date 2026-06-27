@@ -9,7 +9,7 @@ import ProductDetailPage from '@/components/customer/ProductDetailPage';
 import CartPage from '@/components/customer/CartPage';
 import CheckoutPage from '@/components/customer/CheckoutPage';
 import MyOrdersPage from '@/components/customer/MyOrdersPage';
-import LoginPage from '@/components/customer/LoginPage';
+import AdminLoginPage from '@/components/customer/AdminLoginPage';
 import AdminDashboard from '@/components/admin/AdminDashboard';
 import AdminProducts from '@/components/admin/AdminProducts';
 import AdminAddProduct from '@/components/admin/AdminAddProduct';
@@ -99,7 +99,7 @@ function PageRouter() {
     'checkout': <CheckoutPage />,
     'order-success': <CheckoutPage />,
     'my-orders': <MyOrdersPage />,
-    'login': <LoginPage />,
+    'admin-login': <AdminLoginPage />,
     'admin-dashboard': <AdminDashboard />,
     'admin-products': <AdminProducts />,
     'admin-add-product': <AdminAddProduct />,

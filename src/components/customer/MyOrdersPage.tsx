@@ -1,11 +1,11 @@
 'use client';
 
-import { useNavStore, useAuthStore, useDataStore, Order } from '@/lib/store';
+import { useNavStore, useDataStore, Order } from '@/lib/store';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Package, Search, Clock, CheckCircle, XCircle, Truck } from 'lucide-react';
 
 const statusConfig: Record<string, { color: string; icon: any; bg: string }> = {
@@ -19,16 +19,9 @@ const statusConfig: Record<string, { color: string; icon: any; bg: string }> = {
 
 export default function MyOrdersPage() {
   const { navigate } = useNavStore();
-  const { user, isLoggedIn } = useAuthStore();
   const { orders, fetchOrders } = useDataStore();
-  const [mobileInput, setMobileInput] = useState(user?.mobile || '');
-  const [searched, setSearched] = useState(!!user?.mobile);
-
-  useEffect(() => {
-    if (user?.mobile) {
-      fetchOrders({ mobile: user.mobile });
-    }
-  }, [user?.mobile]);
+  const [mobileInput, setMobileInput] = useState('');
+  const [searched, setSearched] = useState(false);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,22 +36,20 @@ export default function MyOrdersPage() {
       <div className="max-w-3xl mx-auto px-4 py-4">
         <h2 className="text-xl font-bold text-gray-900 mb-4">My Orders</h2>
 
-        {/* Search */}
-        {!isLoggedIn && (
-          <form onSubmit={handleSearch} className="mb-6">
-            <Label>Enter your mobile number to find orders</Label>
-            <div className="flex gap-2 mt-1.5">
-              <Input
-                type="tel"
-                placeholder="10-digit mobile number"
-                value={mobileInput}
-                onChange={(e) => setMobileInput(e.target.value.replace(/\D/g, '').slice(0, 10))}
-                className="flex-1"
-              />
-              <Button type="submit" className="bg-[#0C831F] text-white">Search</Button>
-            </div>
-          </form>
-        )}
+        {/* Search - always visible */}
+        <form onSubmit={handleSearch} className="mb-6">
+          <Label>Enter your mobile number to find orders</Label>
+          <div className="flex gap-2 mt-1.5">
+            <Input
+              type="tel"
+              placeholder="10-digit mobile number"
+              value={mobileInput}
+              onChange={(e) => setMobileInput(e.target.value.replace(/\D/g, '').slice(0, 10))}
+              className="flex-1"
+            />
+            <Button type="submit" className="bg-[#0C831F] text-white">Search</Button>
+          </div>
+        </form>
 
         {/* Orders List */}
         {searched && orders.length === 0 ? (
