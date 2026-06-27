@@ -21,13 +21,14 @@ export default function LoginPage() {
   const [otpSent, setOtpSent] = useState(false);
   const [resendTimer, setResendTimer] = useState(0);
   const [isDemo, setIsDemo] = useState(false);
+  const [firebaseReady, setFirebaseReady] = useState(typeof window !== 'undefined' && !!process.env.NEXT_PUBLIC_FIREBASE_API_KEY);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const confirmationRef = useRef<any>(null);
   const recaptchaVerifierRef = useRef<any>(null);
   const recaptchaWidgetId = useRef<number | null>(null);
 
   // Firebase Phone Auth uses 6-digit OTP, demo uses 4-digit
-  const useFirebase = typeof window !== 'undefined' && !!process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
+  const useFirebase = firebaseReady;
   const otpLength = useFirebase ? 6 : 4;
 
   // Resend countdown timer
@@ -129,6 +130,14 @@ export default function LoginPage() {
             setError('Domain not authorized in Firebase. Add wholesale-pickup.vercel.app in Firebase Console → Auth → Settings → Authorized domains.');
           } else if (firebaseError.code === 'auth/operation-not-allowed') {
             setError('SMS region not enabled. Firebase Console → Authentication → Settings → SMS region policy → Allow India.');
+          } else if (firebaseError.code === 'auth/billing-not-enabled') {
+            // Firebase billing not enabled — auto fallback to demo mode
+            console.log('[Firebase OTP] Billing not enabled, falling back to demo mode');
+            setFirebaseReady(false);
+            // Retry with demo flow
+            setLoading(false);
+            await handleSendOTPDemo();
+            return;
           } else {
             setError(`OTP failed: ${debugInfo}`);
           }
@@ -162,6 +171,40 @@ export default function LoginPage() {
       }
     } catch (e: any) {
       setError(e?.message || 'Failed to send OTP. Try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Separate demo OTP sender (called when Firebase billing fallback triggers)
+  const handleSendOTPDemo = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const res = await fetch('/api/otp/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mobile }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        if (res.status === 429) {
+          setError(data.error || 'Please wait before requesting a new OTP');
+          setLoading(false);
+          return;
+        }
+        const detail = data.detail ? ` (${data.detail})` : '';
+        throw new Error((data.error || 'Failed to send OTP') + detail);
+      }
+
+      setOtpSent(true);
+      setIsDemo(true);
+      setResendTimer(60);
+      setStep('otp');
+    } catch (e: any) {
+      setError(e?.message || 'Failed to send OTP.');
     } finally {
       setLoading(false);
     }
