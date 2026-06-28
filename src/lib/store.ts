@@ -84,7 +84,8 @@ export type PageName =
   | 'admin-add-product'
   | 'admin-edit-product'
   | 'admin-orders'
-  | 'admin-order-detail';
+  | 'admin-order-detail'
+  | 'admin-monthly-report';
 
 // ============ NAVIGATION STORE ============
 interface NavState {

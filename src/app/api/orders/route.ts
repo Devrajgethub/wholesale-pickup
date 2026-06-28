@@ -93,10 +93,29 @@ export async function POST(req: NextRequest) {
 export async function PUT(req: NextRequest) {
   try {
     const body = await req.json();
-    const { id, orderStatus, paymentStatus, pickupStatus } = body;
+    const { id, orderStatus, paymentStatus, pickupStatus, totalAmount } = body;
 
     if (!id) {
       return NextResponse.json({ error: 'Order ID required' }, { status: 400 });
+    }
+
+    const existingOrder = await db.order.findUnique({ where: { id } });
+    if (!existingOrder) {
+      return NextResponse.json({ error: 'Order not found' }, { status: 404 });
+    }
+
+    // Payment increase protection
+    if (totalAmount !== undefined && totalAmount > existingOrder.totalAmount) {
+      const increase = totalAmount - existingOrder.totalAmount;
+      console.warn(`[PAYMENT INCREASE ALERT] Order ${existingOrder.orderId}: ₹${existingOrder.totalAmount} → ₹${totalAmount} (+₹${increase})`);
+      return NextResponse.json({
+        error: 'Payment amount cannot be increased!',
+        detail: `Original: ₹${existingOrder.totalAmount}, Attempted: ₹${totalAmount}. Only reduction (bargaining) is allowed.`,
+        alert: true,
+        originalAmount: existingOrder.totalAmount,
+        attemptedAmount: totalAmount,
+        increaseAmount: increase,
+      }, { status: 403 });
     }
 
     const updateData: Record<string, unknown> = {};
@@ -106,6 +125,15 @@ export async function PUT(req: NextRequest) {
       updateData.pickupStatus = pickupStatus;
       if (pickupStatus === 'Ready') {
         updateData.orderStatus = 'Ready for Pickup';
+      }
+    }
+    // Allow payment decrease (bargaining)
+    if (totalAmount !== undefined && totalAmount <= existingOrder.totalAmount) {
+      updateData.totalAmount = totalAmount;
+      // Recalculate item totals proportionally
+      if (existingOrder.totalAmount > 0) {
+        const ratio = totalAmount / existingOrder.totalAmount;
+        // Just update total for now — item-level recalc not needed for simple bargaining
       }
     }
 

@@ -16,6 +16,7 @@ import AdminAddProduct from '@/components/admin/AdminAddProduct';
 import AdminEditProduct from '@/components/admin/AdminEditProduct';
 import AdminOrders from '@/components/admin/AdminOrders';
 import AdminOrderDetail from '@/components/admin/AdminOrderDetail';
+import AdminMonthlyReport from '@/components/admin/AdminMonthlyReport';
 import { useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -106,6 +107,7 @@ function PageRouter() {
     'admin-edit-product': <AdminEditProduct />,
     'admin-orders': <AdminOrders />,
     'admin-order-detail': <AdminOrderDetail />,
+    'admin-monthly-report': <AdminMonthlyReport />,
   };
 
   return pages[currentPage] || <HomePage />;
