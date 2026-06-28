@@ -1,6 +1,6 @@
 'use client';
 
-import { useNavStore, useCartStore, useDataStore } from '@/lib/store';
+import { useNavStore, useCartStore, useDataStore, useAuthStore } from '@/lib/store';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -17,9 +17,10 @@ export default function CheckoutPage() {
   const { navigate } = useNavStore();
   const { items, getTotal, clearCart } = useCartStore();
   const { fetchOrders } = useDataStore();
+  const { customerName, customerMobile } = useAuthStore();
 
-  const [name, setName] = useState('');
-  const [mobile, setMobile] = useState('');
+  const [name, setName] = useState(customerName || '');
+  const [mobile, setMobile] = useState(customerMobile || '');
   const [pickupDate, setPickupDate] = useState<Date>();
 
   const [specialNote, setSpecialNote] = useState('');

@@ -78,7 +78,7 @@ export type PageName =
   | 'order-success'
   | 'my-orders'
   | 'order-status'
-  | 'admin-login'
+  | 'login'
   | 'admin-dashboard'
   | 'admin-products'
   | 'admin-add-product'
@@ -103,7 +103,7 @@ interface NavState {
 }
 
 export const useNavStore = create<NavState>((set) => ({
-  currentPage: 'home',
+  currentPage: 'login',
   selectedCategory: '',
   selectedProductId: '',
   selectedOrderId: '',
@@ -160,19 +160,31 @@ export const useCartStore = create<CartState>((set, get) => ({
   getItemCount: () => get().items.reduce((sum, i) => sum + i.quantity, 0),
 }));
 
-// ============ AUTH STORE (Admin-only password login) ============
+// ============ AUTH STORE (Combined login) ============
 interface AuthState {
+  isLoggedIn: boolean;
   isAdmin: boolean;
   adminName: string;
+  customerName: string;
+  customerMobile: string;
+  login: (name: string, mobile: string, isAdmin?: boolean) => void;
   adminLogin: (name: string) => void;
+  setCustomer: (name: string, mobile: string) => void;
+  logout: () => void;
   adminLogout: () => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
+  isLoggedIn: false,
   isAdmin: false,
   adminName: '',
-  adminLogin: (name) => set({ isAdmin: true, adminName: name }),
-  adminLogout: () => set({ isAdmin: false, adminName: '' }),
+  customerName: '',
+  customerMobile: '',
+  login: (name, mobile, isAdmin = false) => set({ isLoggedIn: true, isAdmin, customerName: name, customerMobile: mobile, adminName: isAdmin ? name : '' }),
+  adminLogin: (name) => set({ isAdmin: true, isLoggedIn: true, adminName: name }),
+  setCustomer: (name, mobile) => set({ customerName: name, customerMobile: mobile }),
+  logout: () => set({ isLoggedIn: false, isAdmin: false, adminName: '', customerName: '', customerMobile: '' }),
+  adminLogout: () => set({ isAdmin: false, adminName: '', isLoggedIn: false, customerName: '', customerMobile: '' }),
 }));
 
 // ============ DATA STORE ============

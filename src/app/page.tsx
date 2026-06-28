@@ -100,7 +100,7 @@ function PageRouter() {
     'checkout': <CheckoutPage />,
     'order-success': <CheckoutPage />,
     'my-orders': <MyOrdersPage />,
-    'admin-login': <AdminLoginPage />,
+    'login': <AdminLoginPage />,
     'admin-dashboard': <AdminDashboard />,
     'admin-products': <AdminProducts />,
     'admin-add-product': <AdminAddProduct />,

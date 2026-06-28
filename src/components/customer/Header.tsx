@@ -1,7 +1,7 @@
 'use client';
 
 import { useNavStore, useCartStore, useAuthStore, useDataStore } from '@/lib/store';
-import { Search, ShoppingCart, User, Menu, X, Package, ArrowLeft, ShieldCheck, LogOut } from 'lucide-react';
+import { Search, ShoppingCart, Menu, X, Package, ArrowLeft, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -10,13 +10,13 @@ import { useState } from 'react';
 export default function Header() {
   const { currentPage, navigate, setSearch, searchQuery } = useNavStore();
   const { items } = useCartStore();
-  const { isAdmin, adminName, adminLogout } = useAuthStore();
+  const { isLoggedIn, isAdmin, adminName, customerName, customerMobile, adminLogout, logout } = useAuthStore();
   const { fetchProducts } = useDataStore();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
 
   const itemCount = items.reduce((sum, i) => sum + i.quantity, 0);
-  const isCustomerPage = !currentPage.startsWith('admin');
+  const isCustomerPage = !currentPage.startsWith('admin') && currentPage !== 'login';
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,6 +25,19 @@ export default function Header() {
       navigate('products');
     }
   };
+
+  const handleLogout = () => {
+    if (isAdmin) {
+      adminLogout();
+    } else {
+      logout();
+    }
+    setMobileMenuOpen(false);
+    navigate('login');
+  };
+
+  // Don't show header on login page
+  if (currentPage === 'login') return null;
 
   return (
     <header className="sticky top-0 z-50 bg-[#0C831F] text-white shadow-md">
@@ -88,23 +101,26 @@ export default function Header() {
               </Button>
             )}
 
-            {/* Admin Login / Admin Logout */}
+            {/* User Info + Logout */}
             {isAdmin ? (
               <div className="flex items-center gap-1">
                 <span className="text-xs text-yellow-300 hidden sm:block px-2">
-                  <ShieldCheck className="h-3.5 w-3.5 inline mr-1" />
-                  {adminName}
+                  Admin: {adminName}
                 </span>
-                <Button variant="ghost" size="icon" className="text-white hover:bg-white/10" onClick={() => { adminLogout(); navigate('home'); }}>
+                <Button variant="ghost" size="icon" className="text-white hover:bg-white/10" onClick={handleLogout}>
                   <LogOut className="h-4 w-4" />
                 </Button>
               </div>
-            ) : (
-              <Button variant="ghost" size="sm" className="text-white hover:bg-white/10" onClick={() => navigate('admin-login')}>
-                <ShieldCheck className="h-4 w-4 mr-1" />
-                <span className="hidden sm:inline text-xs">Admin</span>
-              </Button>
-            )}
+            ) : isLoggedIn ? (
+              <div className="flex items-center gap-1">
+                <span className="text-xs text-green-200 hidden sm:block px-2">
+                  {customerName}
+                </span>
+                <Button variant="ghost" size="icon" className="text-white hover:bg-white/10" onClick={handleLogout}>
+                  <LogOut className="h-4 w-4" />
+                </Button>
+              </div>
+            ) : null}
 
             {/* Mobile Menu */}
             <Button variant="ghost" size="icon" className="text-white hover:bg-white/10 md:hidden" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
@@ -133,18 +149,14 @@ export default function Header() {
         {mobileMenuOpen && (
           <div className="pb-3 md:hidden border-t border-white/10">
             <div className="flex flex-col gap-1 pt-2">
-              <Button variant="ghost" className="justify-start text-white hover:bg-white/10" onClick={() => { navigate('my-orders'); setMobileMenuOpen(false); }}>
-                <Package className="h-4 w-4 mr-2" /> My Orders
-              </Button>
-              {isAdmin ? (
-                <Button variant="ghost" className="justify-start text-white hover:bg-white/10" onClick={() => { adminLogout(); navigate('home'); setMobileMenuOpen(false); }}>
-                  <LogOut className="h-4 w-4 mr-2" /> Logout Admin
-                </Button>
-              ) : (
-                <Button variant="ghost" className="justify-start text-white hover:bg-white/10" onClick={() => { navigate('admin-login'); setMobileMenuOpen(false); }}>
-                  <ShieldCheck className="h-4 w-4 mr-2" /> Admin Login
+              {isCustomerPage && (
+                <Button variant="ghost" className="justify-start text-white hover:bg-white/10" onClick={() => { navigate('my-orders'); setMobileMenuOpen(false); }}>
+                  <Package className="h-4 w-4 mr-2" /> My Orders
                 </Button>
               )}
+              <Button variant="ghost" className="justify-start text-red-200 hover:bg-white/10" onClick={handleLogout}>
+                <LogOut className="h-4 w-4 mr-2" /> Logout ({isAdmin ? 'Admin' : customerName})
+              </Button>
             </div>
           </div>
         )}
