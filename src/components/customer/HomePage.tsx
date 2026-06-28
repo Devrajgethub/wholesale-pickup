@@ -60,12 +60,48 @@ export default function HomePage() {
                 </Button>
               </div>
             </div>
-            <div className="flex-shrink-0 text-center">
-              <div className="w-40 h-40 md:w-52 md:h-52 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-sm">
-                <div className="text-center">
-                  <span className="text-5xl md:text-6xl block mb-2">🏪</span>
-                  <p className="text-xs font-medium text-green-200">Bulk Orders</p>
-                  <p className="text-xs text-green-200">Best Prices</p>
+            <div className="flex-shrink-0">
+              <div className="relative w-44 h-44 md:w-56 md:h-56">
+                {/* Outer rotating ring */}
+                <div className="absolute inset-0 rounded-full border-2 border-dashed border-white/20 animate-[spin_20s_linear_infinite]" />
+                {/* Middle ring with gradient */}
+                <div className="absolute inset-3 rounded-full bg-white/10 backdrop-blur-md border border-white/20 shadow-2xl flex items-center justify-center">
+                  {/* Inner glowing circle */}
+                  <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-full bg-gradient-to-br from-yellow-400/20 to-green-300/20 border border-white/30 flex flex-col items-center justify-center gap-2">
+                    {/* Shop SVG Icon */}
+                    <svg viewBox="0 0 64 64" className="w-14 h-14 md:w-16 md:h-16 drop-shadow-lg" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      {/* Shop body */}
+                      <rect x="8" y="28" width="48" height="28" rx="3" fill="white" fill-opacity="0.95"/>
+                      {/* Awning */}
+                      <path d="M4 28 L8 28 L8 14 C8 12 9 10 12 10 L20 10 L20 14 C20 17 22 19 25 19 C28 19 30 17 30 14 L30 10 L34 10 L34 14 C34 17 36 19 39 19 C42 19 44 17 44 14 L44 10 L52 10 C55 10 56 12 56 14 L56 28 L60 28" fill="#FFD700" stroke="white" stroke-width="1.5"/>
+                      {/* Door */}
+                      <rect x="24" y="36" width="16" height="20" rx="2" fill="#0C831F"/>
+                      <circle cx="37" cy="47" r="1.5" fill="#FFD700"/>
+                      {/* Window left */}
+                      <rect x="12" y="34" width="8" height="8" rx="1" fill="#87CEEB" fill-opacity="0.8"/>
+                      <line x1="16" y1="34" x2="16" y2="42" stroke="white" stroke-width="0.8"/>
+                      <line x1="12" y1="38" x2="20" y2="38" stroke="white" stroke-width="0.8"/>
+                      {/* Window right */}
+                      <rect x="44" y="34" width="8" height="8" rx="1" fill="#87CEEB" fill-opacity="0.8"/>
+                      <line x1="48" y1="34" x2="48" y2="42" stroke="white" stroke-width="0.8"/>
+                      <line x1="44" y1="38" x2="52" y2="38" stroke="white" stroke-width="0.8"/>
+                      {/* Open sign glow */}
+                      <rect x="27" y="40" width="10" height="4" rx="1" fill="#FFD700"/>
+                    </svg>
+                    {/* Text below icon */}
+                    <div className="text-center -mt-1">
+                      <p className="text-[11px] md:text-xs font-bold text-white tracking-wide">BULK ORDERS</p>
+                      <div className="w-8 h-[1px] bg-yellow-400/60 mx-auto my-1" />
+                      <p className="text-[10px] md:text-[11px] font-medium text-green-100 tracking-wider">BEST PRICES</p>
+                    </div>
+                    {/* Sparkle decorations */}
+                    <div className="absolute -top-1 -right-1 w-4 h-4">
+                      <div className="w-3 h-3 bg-yellow-400 rounded-full animate-pulse opacity-80" />
+                    </div>
+                    <div className="absolute -bottom-1 -left-1 w-3 h-3">
+                      <div className="w-2 h-2 bg-green-300 rounded-full animate-pulse opacity-60" style={{ animationDelay: '0.5s' }} />
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
