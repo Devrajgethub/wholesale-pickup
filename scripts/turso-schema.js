@@ -84,17 +84,6 @@ async function main() {
       CONSTRAINT "OrderItem_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "Order" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
       CONSTRAINT "OrderItem_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
     );
-
-    CREATE TABLE IF NOT EXISTS "Otp" (
-      "id" TEXT NOT NULL PRIMARY KEY,
-      "mobile" TEXT NOT NULL,
-      "otp" TEXT NOT NULL,
-      "verified" BOOLEAN NOT NULL DEFAULT 0,
-      "expiresAt" DATETIME NOT NULL,
-      "attempts" INTEGER NOT NULL DEFAULT 0,
-      "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
-    );
-    CREATE INDEX IF NOT EXISTS "Otp_mobile_idx" ON "Otp"("mobile");
   `;
 
   const statements = sql.split(';').map(s => s.trim()).filter(s => s.length > 0);

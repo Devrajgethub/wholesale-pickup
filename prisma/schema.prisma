@@ -84,13 +84,3 @@ model OrderItem {
   productId   String
   createdAt   DateTime @default(now())
 }
-
-model Otp {
-  id        String   @id @default(cuid())
-  mobile    String
-  otp       String
-  verified  Boolean  @default(false)
-  expiresAt DateTime
-  attempts  Int      @default(0)
-  createdAt DateTime @default(now())
-}
