@@ -28,7 +28,7 @@ export default function AdminDashboard() {
     { label: 'Total Revenue', value: `₹${totalRevenue.toLocaleString()}`, icon: IndianRupee, color: 'text-green-600', bg: 'bg-green-50 dark:bg-green-900/20', border: 'border-green-200' },
     { label: 'Total Orders', value: orders.length.toString(), icon: ShoppingCart, color: 'text-blue-600', bg: 'bg-blue-50 dark:bg-blue-900/20', border: 'border-blue-200' },
     { label: 'Pending Orders', value: pendingOrders.toString(), icon: Clock, color: 'text-yellow-600', bg: 'bg-yellow-50 dark:bg-yellow-900/20', border: 'border-yellow-200' },
-    { label: 'Ready for Pickup', value: readyOrders.toString(), icon: TrendingUp, color: 'text-emerald-600', bg: 'bg-emerald-50', border: 'border-emerald-200' },
+    { label: 'Ready for Pickup', value: readyOrders.toString(), icon: TrendingUp, color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-50 dark:bg-emerald-900/20', border: 'border-emerald-200 dark:border-emerald-800' },
     { label: 'Total Products', value: products.length.toString(), icon: Package, color: 'text-purple-600', bg: 'bg-purple-50 dark:bg-purple-900/20', border: 'border-purple-200' },
     { label: 'Categories', value: categories.length.toString(), icon: AlertCircle, color: 'text-orange-600', bg: 'bg-orange-50 dark:bg-orange-900/20', border: 'border-orange-200' },
   ];
@@ -36,12 +36,12 @@ export default function AdminDashboard() {
   const recentOrders = orders.slice(0, 5);
 
   const statusColor: Record<string, string> = {
-    'Pending': 'bg-yellow-100 text-yellow-800',
-    'Accepted': 'bg-blue-100 dark:bg-blue-900/30 text-blue-800',
-    'Packing': 'bg-orange-100 text-orange-800',
-    'Ready for Pickup': 'bg-green-100 dark:bg-green-900/30 text-green-800',
-    'Completed': 'bg-green-200 text-green-900',
-    'Cancelled': 'bg-red-100 text-red-800',
+    'Pending': 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300',
+    'Accepted': 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300',
+    'Packing': 'bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300',
+    'Ready for Pickup': 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300',
+    'Completed': 'bg-green-200 dark:bg-green-900/40 text-green-900 dark:text-green-300',
+    'Cancelled': 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300',
   };
 
   return (
