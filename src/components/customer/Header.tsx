@@ -1,7 +1,8 @@
 'use client';
 
 import { useNavStore, useCartStore, useAuthStore, useDataStore } from '@/lib/store';
-import { Search, ShoppingCart, Menu, X, Package, ArrowLeft, LogOut } from 'lucide-react';
+import { useTheme } from '@/components/ThemeProvider';
+import { Search, ShoppingCart, Menu, X, Package, ArrowLeft, LogOut, Sun, Moon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -10,8 +11,9 @@ import { useState } from 'react';
 export default function Header() {
   const { currentPage, navigate, setSearch, searchQuery } = useNavStore();
   const { items } = useCartStore();
-  const { isLoggedIn, isAdmin, adminName, customerName, customerMobile, adminLogout, logout } = useAuthStore();
+  const { isLoggedIn, isAdmin, adminName, customerName, adminLogout, logout } = useAuthStore();
   const { fetchProducts } = useDataStore();
+  const { theme, toggleTheme } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
 
@@ -27,20 +29,15 @@ export default function Header() {
   };
 
   const handleLogout = () => {
-    if (isAdmin) {
-      adminLogout();
-    } else {
-      logout();
-    }
+    if (isAdmin) { adminLogout(); } else { logout(); }
     setMobileMenuOpen(false);
     navigate('login');
   };
 
-  // Don't show header on login page
   if (currentPage === 'login') return null;
 
   return (
-    <header className="sticky top-0 z-50 bg-[#0C831F] text-white shadow-md">
+    <header className="sticky top-0 z-50 bg-[#0C831F] text-white shadow-lg">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Left: Logo + Back */}
@@ -51,7 +48,7 @@ export default function Header() {
               </Button>
             )}
             <button onClick={() => { if (isAdmin && !isCustomerPage) { navigate('admin-dashboard'); } else { navigate('home'); } }} className="flex items-center gap-2">
-              <div className="w-9 h-9 bg-yellow-400 rounded-lg flex items-center justify-center">
+              <div className="w-9 h-9 bg-yellow-400 rounded-lg flex items-center justify-center shadow-md">
                 <Package className="h-5 w-5 text-green-900" />
               </div>
               <div className="hidden sm:block">
@@ -69,13 +66,18 @@ export default function Header() {
                 placeholder="Search wholesale products..."
                 value={searchQuery}
                 onChange={(e) => setSearch(e.target.value)}
-                className="pl-10 bg-white/95 text-gray-900 border-0 rounded-full placeholder:text-gray-400 focus-visible:ring-2 focus-visible:ring-yellow-400"
+                className="pl-10 bg-white/95 dark:bg-gray-800/95 text-gray-900 dark:text-gray-100 border-0 rounded-full placeholder:text-gray-400 dark:placeholder:text-gray-500 focus-visible:ring-2 focus-visible:ring-yellow-400"
               />
             </div>
           </form>
 
           {/* Right: Actions */}
           <div className="flex items-center gap-1">
+            {/* Dark Mode Toggle */}
+            <Button variant="ghost" size="icon" className="text-white hover:bg-white/10" onClick={toggleTheme}>
+              {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </Button>
+
             {/* Mobile Search Toggle */}
             <Button variant="ghost" size="icon" className="text-white hover:bg-white/10 md:hidden" onClick={() => setSearchOpen(!searchOpen)}>
               <Search className="h-5 w-5" />
@@ -138,7 +140,7 @@ export default function Header() {
                 placeholder="Search products..."
                 value={searchQuery}
                 onChange={(e) => setSearch(e.target.value)}
-                className="pl-10 bg-white/95 text-gray-900 border-0 rounded-full placeholder:text-gray-400"
+                className="pl-10 bg-white/95 dark:bg-gray-800/95 text-gray-900 dark:text-gray-100 border-0 rounded-full placeholder:text-gray-400"
                 autoFocus
               />
             </div>
@@ -164,7 +166,7 @@ export default function Header() {
 
       {/* Admin Navigation Bar */}
       {isAdmin && (
-        <div className="bg-green-900 border-t border-green-800">
+        <div className="bg-green-900 dark:bg-green-950 border-t border-green-800">
           <div className="max-w-7xl mx-auto px-4 flex items-center gap-1 overflow-x-auto scrollbar-hide">
             {[
               { label: 'Dashboard', page: 'admin-dashboard' as const },

@@ -69,10 +69,10 @@ export default function AdminEditProduct() {
 
   if (!product && products.length > 0) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-gray-50 dark:bg-[#111827] dark:bg-[#111827] flex items-center justify-center px-4">
         <div className="text-center">
-          <Package className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-          <p className="text-gray-500">Product not found. Select a product from the list to edit.</p>
+          <Package className="h-16 w-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+          <p className="text-gray-500 dark:text-gray-400">Product not found. Select a product from the list to edit.</p>
           <Button className="mt-4 bg-[#0C831F] text-white" onClick={() => navigate('admin-products')}>Go to Products</Button>
         </div>
       </div>
@@ -80,9 +80,9 @@ export default function AdminEditProduct() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-[#111827] dark:bg-[#111827]">
       <div className="max-w-2xl mx-auto px-4 py-6">
-        <Button variant="ghost" className="mb-4 text-gray-600" onClick={() => navigate('admin-products')}>
+        <Button variant="ghost" className="mb-4 text-gray-600 dark:text-gray-400" onClick={() => navigate('admin-products')}>
           <ArrowLeft className="h-4 w-4 mr-2" /> Back to Products
         </Button>
 
@@ -94,7 +94,7 @@ export default function AdminEditProduct() {
             {success ? (
               <div className="text-center py-8">
                 <CheckCircle className="h-12 w-12 text-[#0C831F] mx-auto mb-3" />
-                <p className="font-bold text-gray-900">Product updated successfully!</p>
+                <p className="font-bold text-gray-900 dark:text-gray-100">Product updated successfully!</p>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4">

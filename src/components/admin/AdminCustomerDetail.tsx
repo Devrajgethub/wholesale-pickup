@@ -64,14 +64,14 @@ export default function AdminCustomerDetail() {
 
   if (!customer) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <p className="text-gray-500">Customer not found</p>
+      <div className="min-h-screen bg-gray-50 dark:bg-[#111827] dark:bg-[#111827] flex items-center justify-center">
+        <p className="text-gray-500 dark:text-gray-400">Customer not found</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-[#111827] dark:bg-[#111827]">
       <div className="max-w-5xl mx-auto px-4 py-4">
         <Button variant="ghost" className="mb-3" onClick={() => useNavStore.getState().navigate('admin-customers')}>
           <ChevronLeft className="h-4 w-4 mr-1" /> Back to Customers
@@ -86,8 +86,8 @@ export default function AdminCustomerDetail() {
                   <span className="text-white font-bold text-2xl">{customer.name.charAt(0).toUpperCase()}</span>
                 </div>
                 <div>
-                  <h2 className="text-xl font-extrabold text-gray-900">{customer.name}</h2>
-                  <p className="text-sm text-gray-500 flex items-center gap-1 mt-1">
+                  <h2 className="text-xl font-extrabold text-gray-900 dark:text-gray-100">{customer.name}</h2>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1 mt-1">
                     <Phone className="h-3.5 w-3.5" /> {customer.mobile}
                   </p>
                   {customer.businessName && (
@@ -112,29 +112,29 @@ export default function AdminCustomerDetail() {
           <Card>
             <CardContent className="p-4 text-center">
               <Package className="h-5 w-5 text-blue-500 mx-auto mb-1" />
-              <p className="text-2xl font-extrabold text-gray-900">{customer.totalOrders}</p>
-              <p className="text-xs text-gray-500">Total Orders</p>
+              <p className="text-2xl font-extrabold text-gray-900 dark:text-gray-100">{customer.totalOrders}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Total Orders</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
-              <IndianRupee className="h-5 w-5 text-gray-500 mx-auto mb-1" />
-              <p className="text-2xl font-extrabold text-gray-900">{customer.totalItems}</p>
-              <p className="text-xs text-gray-500">Total Items</p>
+              <IndianRupee className="h-5 w-5 text-gray-500 dark:text-gray-400 mx-auto mb-1" />
+              <p className="text-2xl font-extrabold text-gray-900 dark:text-gray-100">{customer.totalItems}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Total Items</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
               <CheckCircle className="h-5 w-5 text-green-500 mx-auto mb-1" />
               <p className="text-2xl font-extrabold text-green-600">₹{customer.totalPaid.toLocaleString()}</p>
-              <p className="text-xs text-gray-500">Total Paid</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Total Paid</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
               <AlertTriangle className="h-5 w-5 text-orange-500 mx-auto mb-1" />
               <p className="text-2xl font-extrabold text-orange-600">₹{customer.totalPending.toLocaleString()}</p>
-              <p className="text-xs text-gray-500">Total Pending</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Total Pending</p>
             </CardContent>
           </Card>
         </div>
@@ -142,30 +142,30 @@ export default function AdminCustomerDetail() {
         {/* Grand Total */}
         <Card className="mb-4 border-2 border-[#0C831F]">
           <CardContent className="p-4 flex items-center justify-between">
-            <span className="font-bold text-gray-700">Grand Total (All Orders)</span>
+            <span className="font-bold text-gray-700 dark:text-gray-300">Grand Total (All Orders)</span>
             <span className="text-2xl font-extrabold text-[#0C831F]">₹{customer.totalAmount.toLocaleString()}</span>
           </CardContent>
         </Card>
 
         {/* Orders List */}
-        <h3 className="font-bold text-gray-900 mb-3">Order History ({customer.orders.length})</h3>
+        <h3 className="font-bold text-gray-900 dark:text-gray-100 mb-3">Order History ({customer.orders.length})</h3>
         <div className="space-y-3">
           {customer.orders.map((order) => (
             <Card
               key={order.id}
-              className="cursor-pointer hover:shadow-md transition-shadow"
+              className="cursor-pointer hover:shadow-lg dark:hover:shadow-gray-900/40 transition-shadow"
               onClick={() => setOrder(order.id)}
             >
               <CardContent className="p-4">
                 <div className="flex items-start justify-between">
                   <div>
                     <div className="flex items-center gap-2">
-                      <p className="font-bold text-gray-900">#{order.orderId}</p>
+                      <p className="font-bold text-gray-900 dark:text-gray-100">#{order.orderId}</p>
                       <Badge
                         variant="secondary"
                         className={`text-[10px] ${
                           order.paymentStatus === 'Paid'
-                            ? 'bg-green-100 text-green-700'
+                            ? 'bg-green-100 dark:bg-green-900/30 text-green-700'
                             : 'bg-orange-100 text-orange-700'
                         }`}
                       >
@@ -173,7 +173,7 @@ export default function AdminCustomerDetail() {
                       </Badge>
                       <Badge variant="secondary" className="text-[10px]">{order.orderStatus}</Badge>
                     </div>
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                       {new Date(order.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
                       {' '}
                       {new Date(order.createdAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true })}
@@ -185,7 +185,7 @@ export default function AdminCustomerDetail() {
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="font-bold text-gray-900">₹{order.totalAmount.toLocaleString()}</p>
+                    <p className="font-bold text-gray-900 dark:text-gray-100">₹{order.totalAmount.toLocaleString()}</p>
                     <ChevronLeft className="h-4 w-4 text-gray-400 rotate-180 mt-1 ml-auto" />
                   </div>
                 </div>

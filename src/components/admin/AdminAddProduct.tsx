@@ -45,9 +45,9 @@ export default function AdminAddProduct() {
   const update = (key: string, value: string | boolean) => setForm(prev => ({ ...prev, [key]: value }));
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-[#111827] dark:bg-[#111827]">
       <div className="max-w-2xl mx-auto px-4 py-6">
-        <Button variant="ghost" className="mb-4 text-gray-600" onClick={() => navigate('admin-products')}>
+        <Button variant="ghost" className="mb-4 text-gray-600 dark:text-gray-400" onClick={() => navigate('admin-products')}>
           <ArrowLeft className="h-4 w-4 mr-2" /> Back to Products
         </Button>
 
@@ -59,7 +59,7 @@ export default function AdminAddProduct() {
             {success ? (
               <div className="text-center py-8">
                 <CheckCircle className="h-12 w-12 text-[#0C831F] mx-auto mb-3" />
-                <p className="font-bold text-gray-900">Product added successfully!</p>
+                <p className="font-bold text-gray-900 dark:text-gray-100">Product added successfully!</p>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4">

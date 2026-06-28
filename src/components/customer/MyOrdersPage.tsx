@@ -9,12 +9,12 @@ import { useState } from 'react';
 import { Package, Search, Clock, CheckCircle, XCircle, Truck } from 'lucide-react';
 
 const statusConfig: Record<string, { color: string; icon: any; bg: string }> = {
-  'Pending': { color: 'text-yellow-700', icon: Clock, bg: 'bg-yellow-50' },
-  'Accepted': { color: 'text-blue-700', icon: Clock, bg: 'bg-blue-50' },
-  'Packing': { color: 'text-orange-700', icon: Package, bg: 'bg-orange-50' },
-  'Ready for Pickup': { color: 'text-green-700', icon: CheckCircle, bg: 'bg-green-50' },
-  'Completed': { color: 'text-green-700', icon: CheckCircle, bg: 'bg-green-50' },
-  'Cancelled': { color: 'text-red-700', icon: XCircle, bg: 'bg-red-50' },
+  'Pending': { color: 'text-yellow-700', icon: Clock, bg: 'bg-yellow-50 dark:bg-yellow-900/20' },
+  'Accepted': { color: 'text-blue-700', icon: Clock, bg: 'bg-blue-50 dark:bg-blue-900/20' },
+  'Packing': { color: 'text-orange-700', icon: Package, bg: 'bg-orange-50 dark:bg-orange-900/20' },
+  'Ready for Pickup': { color: 'text-green-700', icon: CheckCircle, bg: 'bg-green-50 dark:bg-green-900/20' },
+  'Completed': { color: 'text-green-700', icon: CheckCircle, bg: 'bg-green-50 dark:bg-green-900/20' },
+  'Cancelled': { color: 'text-red-700', icon: XCircle, bg: 'bg-red-50 dark:bg-red-900/20' },
 };
 
 export default function MyOrdersPage() {
@@ -32,9 +32,9 @@ export default function MyOrdersPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-[#111827] dark:bg-[#111827]">
       <div className="max-w-3xl mx-auto px-4 py-4">
-        <h2 className="text-xl font-bold text-gray-900 mb-4">My Orders</h2>
+        <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">My Orders</h2>
 
         {/* Search - always visible */}
         <form onSubmit={handleSearch} className="mb-6">
@@ -55,7 +55,7 @@ export default function MyOrdersPage() {
         {searched && orders.length === 0 ? (
           <div className="text-center py-16">
             <Package className="h-16 w-16 text-gray-200 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-600">No orders found</h3>
+            <h3 className="text-lg font-medium text-gray-600 dark:text-gray-400">No orders found</h3>
             <p className="text-sm text-gray-400 mt-1">Place your first order to see it here</p>
             <Button className="mt-4 bg-[#0C831F] text-white" onClick={() => navigate('home')}>Start Shopping</Button>
           </div>
@@ -66,11 +66,11 @@ export default function MyOrdersPage() {
               const StatusIcon = status.icon;
 
               return (
-                <div key={order.id} className="bg-white rounded-xl p-4 shadow-sm">
+                <div key={order.id} className="bg-white dark:bg-gray-800 dark:bg-gray-800 rounded-xl p-4 shadow-sm">
                   <div className="flex items-start justify-between mb-3">
                     <div>
-                      <p className="font-bold text-gray-900">#{order.orderId}</p>
-                      <p className="text-xs text-gray-500">{new Date(order.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+                      <p className="font-bold text-gray-900 dark:text-gray-100">#{order.orderId}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">{new Date(order.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
                     </div>
                     <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${status.bg} ${status.color}`}>
                       <StatusIcon className="h-3.5 w-3.5" />
@@ -78,7 +78,7 @@ export default function MyOrdersPage() {
                     </div>
                   </div>
 
-                  <div className="text-sm text-gray-600 mb-2">
+                  <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">
                     {order.items.slice(0, 3).map((item, i) => (
                       <span key={i}>
                         {item.productName} x{item.quantity}
@@ -90,7 +90,7 @@ export default function MyOrdersPage() {
 
                   <div className="flex items-center justify-between pt-3 border-t">
                     <div>
-                      <span className="font-bold text-lg text-gray-900">₹{order.totalAmount.toLocaleString()}</span>
+                      <span className="font-bold text-lg text-gray-900 dark:text-gray-100">₹{order.totalAmount.toLocaleString()}</span>
                       <Badge variant="secondary" className="ml-2 text-[10px]">{order.paymentMethod}</Badge>
                     </div>
                     {order.orderStatus === 'Ready for Pickup' && (

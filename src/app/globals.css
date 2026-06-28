@@ -78,12 +78,47 @@
   --sidebar-ring: oklch(0.48 0.16 145);
 }
 
+/* Dark mode variables */
+.dark {
+  --background: oklch(0.13 0.005 260);
+  --foreground: oklch(0.95 0 0);
+  --card: oklch(0.18 0.005 260);
+  --card-foreground: oklch(0.95 0 0);
+  --popover: oklch(0.18 0.005 260);
+  --popover-foreground: oklch(0.95 0 0);
+  --primary: oklch(0.65 0.2 145);
+  --primary-foreground: oklch(0.15 0 0);
+  --secondary: oklch(0.22 0.01 260);
+  --secondary-foreground: oklch(0.85 0.01 145);
+  --muted: oklch(0.22 0.005 260);
+  --muted-foreground: oklch(0.6 0 0);
+  --accent: oklch(0.22 0.01 260);
+  --accent-foreground: oklch(0.85 0.01 145);
+  --destructive: oklch(0.6 0.24 27);
+  --border: oklch(0.28 0.01 260);
+  --input: oklch(0.28 0.01 260);
+  --ring: oklch(0.65 0.2 145);
+  --chart-1: oklch(0.65 0.2 145);
+  --chart-2: oklch(0.75 0.16 80);
+  --chart-3: oklch(0.6 0.15 20);
+  --chart-4: oklch(0.65 0.18 250);
+  --chart-5: oklch(0.7 0.15 310);
+  --sidebar: oklch(0.16 0.005 260);
+  --sidebar-foreground: oklch(0.9 0 0);
+  --sidebar-primary: oklch(0.65 0.2 145);
+  --sidebar-primary-foreground: oklch(0.15 0 0);
+  --sidebar-accent: oklch(0.22 0.01 260);
+  --sidebar-accent-foreground: oklch(0.85 0.01 145);
+  --sidebar-border: oklch(0.28 0.01 260);
+  --sidebar-ring: oklch(0.65 0.2 145);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground transition-colors duration-300;
   }
 }
 
@@ -105,4 +140,83 @@
 ::selection {
   background: oklch(0.75 0.16 145);
   color: white;
+}
+
+/* Professional animations */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.4s ease-out forwards;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.5s ease-out forwards;
+}
+
+/* Glassmorphism effect for dark mode */
+.dark .glass-effect {
+  background: rgba(30, 41, 59, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Smooth card hover */
+.card-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+}
+.dark .card-hover:hover {
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+}
+
+/* Dark mode specific: softer borders */
+.dark .border-gray-100 {
+  border-color: rgb(51, 65, 85);
+}
+.dark .border-gray-200 {
+  border-color: rgb(51, 65, 85);
+}
+
+/* Smooth dark mode transition on all elements */
+.dark * {
+  transition-property: background-color, border-color, color;
+  transition-duration: 200ms;
+  transition-timing-function: ease;
+}
+
+/* Override transition for animated elements */
+.dark .animate-spin,
+.dark [class*="animate-"] {
+  transition-property: none;
+}
+
+/* Dark mode header */
+.dark header {
+  background: rgb(6, 50, 20) !important;
+}
+
+/* Dark mode footer */
+.dark footer {
+  background: rgb(10, 15, 25) !important;
 }

@@ -84,9 +84,9 @@ export default function AdminMonthlyReport() {
   }, 0) : 0;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-[#111827] dark:bg-[#111827]">
       <div className="max-w-5xl mx-auto px-4 py-4">
-        <h2 className="text-xl font-bold text-gray-900 mb-4">Monthly Report</h2>
+        <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">Monthly Report</h2>
 
         {/* Month Navigator */}
         <div className="flex items-center justify-between bg-white rounded-xl p-4 shadow-sm mb-4">
@@ -94,8 +94,8 @@ export default function AdminMonthlyReport() {
             <ChevronLeft className="h-4 w-4" />
           </Button>
           <div className="text-center">
-            <p className="text-lg font-bold text-gray-900">{MONTHS[month]} {year}</p>
-            <p className="text-xs text-gray-500">Customer Order Summary</p>
+            <p className="text-lg font-bold text-gray-900 dark:text-gray-100">{MONTHS[month]} {year}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Customer Order Summary</p>
           </div>
           <Button variant="outline" size="sm" onClick={nextMonth} disabled={year === now.getFullYear() && month === now.getMonth()}>
             <ChevronRight className="h-4 w-4" />
@@ -105,7 +105,7 @@ export default function AdminMonthlyReport() {
         {loading ? (
           <div className="flex justify-center py-16"><Loader2 className="h-8 w-8 animate-spin text-[#0C831F]" /></div>
         ) : !report ? (
-          <p className="text-center text-gray-500 py-16">Failed to load report</p>
+          <p className="text-center text-gray-500 dark:text-gray-400 py-16">Failed to load report</p>
         ) : (
           <>
             {/* Summary Cards */}
@@ -113,35 +113,35 @@ export default function AdminMonthlyReport() {
               <Card>
                 <CardContent className="p-4 text-center">
                   <Users className="h-5 w-5 text-blue-500 mx-auto mb-1" />
-                  <p className="text-2xl font-extrabold text-gray-900">{report.customers.length}</p>
-                  <p className="text-xs text-gray-500">Customers</p>
+                  <p className="text-2xl font-extrabold text-gray-900 dark:text-gray-100">{report.customers.length}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Customers</p>
                 </CardContent>
               </Card>
               <Card>
                 <CardContent className="p-4 text-center">
                   <ShoppingCart className="h-5 w-5 text-green-500 mx-auto mb-1" />
-                  <p className="text-2xl font-extrabold text-gray-900">{report.totalOrders}</p>
-                  <p className="text-xs text-gray-500">Total Orders</p>
+                  <p className="text-2xl font-extrabold text-gray-900 dark:text-gray-100">{report.totalOrders}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Total Orders</p>
                 </CardContent>
               </Card>
               <Card>
                 <CardContent className="p-4 text-center">
                   <IndianRupee className="h-5 w-5 text-yellow-500 mx-auto mb-1" />
-                  <p className="text-2xl font-extrabold text-gray-900">₹{report.totalRevenue.toLocaleString()}</p>
-                  <p className="text-xs text-gray-500">Total Revenue</p>
+                  <p className="text-2xl font-extrabold text-gray-900 dark:text-gray-100">₹{report.totalRevenue.toLocaleString()}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Total Revenue</p>
                 </CardContent>
               </Card>
               <Card>
                 <CardContent className="p-4 text-center">
                   <Package className="h-5 w-5 text-purple-500 mx-auto mb-1" />
-                  <p className="text-2xl font-extrabold text-gray-900">{report.totalItems}</p>
-                  <p className="text-xs text-gray-500">Total Items</p>
+                  <p className="text-2xl font-extrabold text-gray-900 dark:text-gray-100">{report.totalItems}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Total Items</p>
                 </CardContent>
               </Card>
             </div>
 
             {savings > 0 && (
-              <div className="bg-orange-50 border border-orange-200 rounded-xl p-3 mb-4 flex items-center gap-2">
+              <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 rounded-xl p-3 mb-4 flex items-center gap-2">
                 <AlertTriangle className="h-5 w-5 text-orange-500 flex-shrink-0" />
                 <p className="text-sm text-orange-700">
                   <strong>Bargaining Discount Given:</strong> ₹{savings.toLocaleString()} this month
@@ -152,7 +152,7 @@ export default function AdminMonthlyReport() {
             {report.customers.length === 0 ? (
               <div className="text-center py-16">
                 <Users className="h-16 w-16 text-gray-200 mx-auto mb-4" />
-                <p className="text-gray-500">No orders this month</p>
+                <p className="text-gray-500 dark:text-gray-400">No orders this month</p>
               </div>
             ) : selectedCustomer ? (
               /* Customer Detail View */
@@ -165,15 +165,15 @@ export default function AdminMonthlyReport() {
                     <div className="flex items-start justify-between mb-3">
                       <div>
                         <h3 className="font-bold text-lg">{selectedCustomer.name}</h3>
-                        <p className="text-sm text-gray-500">{selectedCustomer.mobile}</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">{selectedCustomer.mobile}</p>
                         {selectedCustomer.businessName && <p className="text-sm text-gray-400">{selectedCustomer.businessName}</p>}
                       </div>
                       <div className="text-right">
                         <p className="text-xl font-extrabold text-[#0C831F]">₹{selectedCustomer.totalPayment.toLocaleString()}</p>
-                        <p className="text-xs text-gray-500">{selectedCustomer.orderCount} orders</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">{selectedCustomer.orderCount} orders</p>
                       </div>
                     </div>
-                    <div className="flex gap-4 text-sm text-gray-600">
+                    <div className="flex gap-4 text-sm text-gray-600 dark:text-gray-400">
                       <span>{selectedCustomer.totalItems} items ordered</span>
                     </div>
                   </CardContent>
@@ -182,12 +182,12 @@ export default function AdminMonthlyReport() {
                 {/* Customer's Orders */}
                 <div className="space-y-3">
                   {selectedCustomer.orders.map((order: any) => (
-                    <Card key={order.id} className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => { setOrder(order.id); navigate('admin-order-detail'); }}>
+                    <Card key={order.id} className="cursor-pointer hover:shadow-lg dark:hover:shadow-gray-900/40 transition-shadow" onClick={() => { setOrder(order.id); navigate('admin-order-detail'); }}>
                       <CardContent className="p-4">
                         <div className="flex items-start justify-between">
                           <div>
-                            <p className="font-bold text-gray-900">#{order.orderId}</p>
-                            <p className="text-xs text-gray-500">{new Date(order.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+                            <p className="font-bold text-gray-900 dark:text-gray-100">#{order.orderId}</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">{new Date(order.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
                             <p className="text-[10px] text-gray-400">{new Date(order.createdAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true })}</p>
                             <p className="text-xs text-gray-400 mt-1">
                               {order.items.map((i: any, idx: number) => (
@@ -196,7 +196,7 @@ export default function AdminMonthlyReport() {
                             </p>
                           </div>
                           <div className="text-right">
-                            <p className="font-bold text-gray-900">₹{order.totalAmount.toLocaleString()}</p>
+                            <p className="font-bold text-gray-900 dark:text-gray-100">₹{order.totalAmount.toLocaleString()}</p>
                             <Badge variant="secondary" className="text-[10px] mt-1">{order.orderStatus}</Badge>
                           </div>
                         </div>
@@ -212,20 +212,20 @@ export default function AdminMonthlyReport() {
                   <div className="overflow-x-auto">
                     <table className="w-full">
                       <thead>
-                        <tr className="border-b bg-gray-50">
-                          <th className="text-left p-3 text-xs font-bold text-gray-500 uppercase">Customer</th>
-                          <th className="text-center p-3 text-xs font-bold text-gray-500 uppercase">Orders</th>
-                          <th className="text-center p-3 text-xs font-bold text-gray-500 uppercase">Items</th>
-                          <th className="text-right p-3 text-xs font-bold text-gray-500 uppercase">Total Payment</th>
-                          <th className="text-right p-3 text-xs font-bold text-gray-500 uppercase">Last Order</th>
+                        <tr className="border-b bg-gray-50 dark:bg-gray-800/50 dark:bg-[#111827]">
+                          <th className="text-left p-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Customer</th>
+                          <th className="text-center p-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Orders</th>
+                          <th className="text-center p-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Items</th>
+                          <th className="text-right p-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Total Payment</th>
+                          <th className="text-right p-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Last Order</th>
                           <th className="p-3"></th>
                         </tr>
                       </thead>
                       <tbody>
                         {report.customers.map((cust, idx) => (
-                          <tr key={cust.mobile} className="border-b hover:bg-gray-50 cursor-pointer" onClick={() => setSelectedCustomer(cust)}>
+                          <tr key={cust.mobile} className="border-b hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-[#111827] cursor-pointer" onClick={() => setSelectedCustomer(cust)}>
                             <td className="p-3">
-                              <p className="font-medium text-sm text-gray-900">{cust.name}</p>
+                              <p className="font-medium text-sm text-gray-900 dark:text-gray-100">{cust.name}</p>
                               <p className="text-xs text-gray-400">{cust.mobile}</p>
                               {cust.businessName && <p className="text-xs text-gray-400">{cust.businessName}</p>}
                             </td>
@@ -239,7 +239,7 @@ export default function AdminMonthlyReport() {
                               <span className="text-sm font-extrabold text-[#0C831F]">₹{cust.totalPayment.toLocaleString()}</span>
                             </td>
                             <td className="text-right p-3">
-                              <p className="text-xs text-gray-500">{new Date(cust.orders[0]?.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</p>
+                              <p className="text-xs text-gray-500 dark:text-gray-400">{new Date(cust.orders[0]?.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</p>
                               <p className="text-[10px] text-gray-400">{new Date(cust.orders[0]?.createdAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true })}</p>
                             </td>
                             <td className="p-3 text-right">

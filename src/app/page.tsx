@@ -24,7 +24,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 function Footer() {
   return (
-    <footer className="bg-gray-900 text-gray-400 mt-auto">
+    <footer className="bg-gray-900 dark:bg-gray-950 dark:bg-gray-950 dark:bg-gray-950 text-gray-400 dark:text-gray-500 dark:text-gray-500 mt-auto">
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
@@ -55,7 +55,7 @@ function Footer() {
             </ul>
           </div>
         </div>
-        <div className="border-t border-gray-800 mt-8 pt-4 text-center text-xs">
+        <div className="border-t border-gray-800 dark:border-gray-700 mt-8 pt-4 text-center text-xs">
           <p>&copy; 2026 Mitra Bros Mart. All rights reserved.</p>
         </div>
       </div>
@@ -65,11 +65,11 @@ function Footer() {
 
 function LoadingScreen() {
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-gray-50 dark:bg-[#111827] dark:bg-[#111827] flex flex-col">
       <div className="h-16 bg-[#0C831F]">
         <div className="max-w-7xl mx-auto px-4 h-full flex items-center">
-          <Skeleton className="h-8 w-32 bg-white/20" />
-          <Skeleton className="h-10 w-64 bg-white/20 ml-auto rounded-full" />
+          <Skeleton className="h-8 w-32 bg-white/20 dark:bg-white/10" />
+          <Skeleton className="h-10 w-64 bg-white/20 dark:bg-white/10 ml-auto rounded-full" />
         </div>
       </div>
       <div className="max-w-7xl mx-auto px-4 py-4 flex-1">
@@ -129,7 +129,7 @@ export default function App() {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-[#111827]">
       <Header />
       <main className="flex-1">
         <PageRouter />

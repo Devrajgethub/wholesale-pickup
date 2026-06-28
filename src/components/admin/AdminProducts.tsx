@@ -41,13 +41,13 @@ export default function AdminProducts() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-[#111827] dark:bg-[#111827]">
       <div className="max-w-7xl mx-auto px-4 py-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
           <div>
-            <h1 className="text-2xl font-extrabold text-gray-900">Products</h1>
-            <p className="text-sm text-gray-500">{products.length} total products</p>
+            <h1 className="text-2xl font-extrabold text-gray-900 dark:text-gray-100">Products</h1>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{products.length} total products</p>
           </div>
           <Button className="bg-[#0C831F] hover:bg-[#0a6e1a] text-white font-bold" onClick={() => navigate('admin-add-product')}>
             <Plus className="h-4 w-4 mr-2" /> Add Product
@@ -78,33 +78,33 @@ export default function AdminProducts() {
           <CardContent className="p-0">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="bg-gray-50 border-b">
+                <thead className="bg-gray-50 dark:bg-[#111827] dark:bg-[#111827] border-b">
                   <tr>
-                    <th className="text-left p-3 font-medium text-gray-600">Product</th>
-                    <th className="text-left p-3 font-medium text-gray-600 hidden md:table-cell">Category</th>
-                    <th className="text-left p-3 font-medium text-gray-600">Unit</th>
-                    <th className="text-left p-3 font-medium text-gray-600">Price</th>
-                    <th className="text-left p-3 font-medium text-gray-600 hidden sm:table-cell">MRP</th>
-                    <th className="text-left p-3 font-medium text-gray-600">Stock</th>
-                    <th className="text-left p-3 font-medium text-gray-600 hidden lg:table-cell">Status</th>
-                    <th className="text-right p-3 font-medium text-gray-600">Actions</th>
+                    <th className="text-left p-3 font-medium text-gray-600 dark:text-gray-400">Product</th>
+                    <th className="text-left p-3 font-medium text-gray-600 dark:text-gray-400 hidden md:table-cell">Category</th>
+                    <th className="text-left p-3 font-medium text-gray-600 dark:text-gray-400">Unit</th>
+                    <th className="text-left p-3 font-medium text-gray-600 dark:text-gray-400">Price</th>
+                    <th className="text-left p-3 font-medium text-gray-600 dark:text-gray-400 hidden sm:table-cell">MRP</th>
+                    <th className="text-left p-3 font-medium text-gray-600 dark:text-gray-400">Stock</th>
+                    <th className="text-left p-3 font-medium text-gray-600 dark:text-gray-400 hidden lg:table-cell">Status</th>
+                    <th className="text-right p-3 font-medium text-gray-600 dark:text-gray-400">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   <AnimatePresence>
                     {filtered.map((product: Product) => (
-                      <motion.tr key={product.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="border-b last:border-0 hover:bg-gray-50">
+                      <motion.tr key={product.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="border-b last:border-0 hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-[#111827]">
                         <td className="p-3">
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <div className="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center flex-shrink-0">
                               <span className="text-lg">📦</span>
                             </div>
-                            <div className="font-medium text-gray-900 truncate max-w-[200px]">{product.name}</div>
+                            <div className="font-medium text-gray-900 dark:text-gray-100 truncate max-w-[200px]">{product.name}</div>
                           </div>
                         </td>
-                        <td className="p-3 hidden md:table-cell text-gray-600">{product.category?.name}</td>
-                        <td className="p-3 text-gray-600 text-xs">{product.unit}</td>
-                        <td className="p-3 font-bold text-gray-900">₹{product.price.toLocaleString()}</td>
+                        <td className="p-3 hidden md:table-cell text-gray-600 dark:text-gray-400">{product.category?.name}</td>
+                        <td className="p-3 text-gray-600 dark:text-gray-400 text-xs">{product.unit}</td>
+                        <td className="p-3 font-bold text-gray-900 dark:text-gray-100">₹{product.price.toLocaleString()}</td>
                         <td className="p-3 text-gray-400 line-through hidden sm:table-cell">₹{product.mrp.toLocaleString()}</td>
                         <td className="p-3">
                           <span className={`font-medium ${product.stock <= 5 ? 'text-red-500' : product.stock <= 15 ? 'text-yellow-600' : 'text-green-600'}`}>
@@ -112,7 +112,7 @@ export default function AdminProducts() {
                           </span>
                         </td>
                         <td className="p-3 hidden lg:table-cell">
-                          <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${product.isAvailable ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                          <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${product.isAvailable ? 'bg-green-100 dark:bg-green-900/30 text-green-700' : 'bg-red-100 text-red-700'}`}>
                             {product.isAvailable ? 'Active' : 'Inactive'}
                           </span>
                         </td>

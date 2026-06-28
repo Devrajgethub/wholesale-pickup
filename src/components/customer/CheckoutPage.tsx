@@ -81,20 +81,20 @@ export default function CheckoutPage() {
 
   if (orderPlaced) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-gray-50 dark:bg-[#111827] dark:bg-[#111827] flex items-center justify-center px-4">
         <div className="text-center max-w-md">
-          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 animate-bounce">
+          <div className="w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-6 animate-bounce">
             <CheckCircle className="h-10 w-10 text-[#0C831F]" />
           </div>
-          <h2 className="text-2xl font-extrabold text-gray-900">Order Placed!</h2>
-          <p className="text-sm text-gray-500 mt-2">
+          <h2 className="text-2xl font-extrabold text-gray-900 dark:text-gray-100">Order Placed!</h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
             We will notify you when your order is ready for pickup.
           </p>
-          <div className="bg-white rounded-xl p-4 mt-6 shadow-sm">
-            <p className="text-sm text-gray-500">Order ID</p>
+          <div className="bg-white dark:bg-gray-800 dark:bg-gray-800 rounded-xl p-4 mt-6 shadow-sm">
+            <p className="text-sm text-gray-500 dark:text-gray-400">Order ID</p>
             <p className="text-2xl font-extrabold text-[#0C831F] mt-1">{placedOrderId}</p>
           </div>
-          <div className="bg-yellow-50 rounded-xl p-4 mt-3 text-left">
+          <div className="bg-yellow-50 dark:bg-yellow-900/20 rounded-xl p-4 mt-3 text-left">
             <p className="text-sm text-yellow-800">
               <strong>Next Step:</strong> Visit the shop with your Order ID when you receive the &quot;Ready for Pickup&quot; message.
             </p>
@@ -109,14 +109,14 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-[#111827] dark:bg-[#111827]">
       <div className="max-w-3xl mx-auto px-4 py-4">
-        <h2 className="text-xl font-bold text-gray-900 mb-4">Checkout</h2>
+        <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">Checkout</h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Customer Info */}
-          <div className="bg-white rounded-xl p-5 shadow-sm">
-            <h3 className="font-bold text-gray-900 mb-4">Your Details</h3>
+          <div className="bg-white dark:bg-gray-800 dark:bg-gray-800 rounded-xl p-5 shadow-sm">
+            <h3 className="font-bold text-gray-900 dark:text-gray-100 mb-4">Your Details</h3>
             <div className="space-y-4">
               <div>
                 <Label htmlFor="name">Full Name *</Label>
@@ -148,30 +148,30 @@ export default function CheckoutPage() {
           </div>
 
           {/* Payment Info */}
-          <div className="bg-white rounded-xl p-5 shadow-sm">
-            <h3 className="font-bold text-gray-900 mb-4">Payment Method</h3>
-            <div className="flex items-center space-x-3 p-3 border rounded-xl bg-gray-50">
+          <div className="bg-white dark:bg-gray-800 dark:bg-gray-800 rounded-xl p-5 shadow-sm">
+            <h3 className="font-bold text-gray-900 dark:text-gray-100 mb-4">Payment Method</h3>
+            <div className="flex items-center space-x-3 p-3 border rounded-xl bg-gray-50 dark:bg-[#111827]">
               <span className="text-xl">💵</span>
               <div>
                 <div className="font-medium text-sm">Cash at Shop</div>
-                <div className="text-xs text-gray-500">Pay when you pick up your order</div>
+                <div className="text-xs text-gray-500 dark:text-gray-400">Pay when you pick up your order</div>
               </div>
             </div>
           </div>
 
           {/* Special Note */}
-          <div className="bg-white rounded-xl p-5 shadow-sm">
-            <h3 className="font-bold text-gray-900 mb-3">Special Note</h3>
+          <div className="bg-white dark:bg-gray-800 dark:bg-gray-800 rounded-xl p-5 shadow-sm">
+            <h3 className="font-bold text-gray-900 dark:text-gray-100 mb-3">Special Note</h3>
             <Textarea placeholder="Any special instructions for your order..." value={specialNote} onChange={(e) => setSpecialNote(e.target.value)} rows={3} />
           </div>
 
           {/* Order Summary */}
-          <div className="bg-white rounded-xl p-5 shadow-sm">
-            <h3 className="font-bold text-gray-900 mb-3">Order Summary</h3>
+          <div className="bg-white dark:bg-gray-800 dark:bg-gray-800 rounded-xl p-5 shadow-sm">
+            <h3 className="font-bold text-gray-900 dark:text-gray-100 mb-3">Order Summary</h3>
             <div className="space-y-2 max-h-48 overflow-y-auto">
               {items.map((item) => (
                 <div key={item.productId} className="flex justify-between text-sm">
-                  <span className="text-gray-600 truncate mr-4">{item.productName} x {item.quantity}</span>
+                  <span className="text-gray-600 dark:text-gray-400 truncate mr-4">{item.productName} x {item.quantity}</span>
                   <span className="font-medium whitespace-nowrap">₹{(item.price * item.quantity).toLocaleString()}</span>
                 </div>
               ))}
@@ -184,7 +184,7 @@ export default function CheckoutPage() {
 
           {/* Error */}
           {error && (
-            <div className="bg-red-50 text-red-600 text-sm p-3 rounded-xl">{error}</div>
+            <div className="bg-red-50 dark:bg-red-900/20 text-red-600 text-sm p-3 rounded-xl">{error}</div>
           )}
 
           {/* Submit */}

@@ -49,15 +49,15 @@ export default function AdminCustomers() {
   const totalPending = customers.reduce((s, c) => s + c.totalPending, 0);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-[#111827] dark:bg-[#111827]">
       <div className="max-w-5xl mx-auto px-4 py-4">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h1 className="text-2xl font-extrabold text-gray-900">Customers</h1>
-            <p className="text-sm text-gray-500">{customers.length} registered customers</p>
+            <h1 className="text-2xl font-extrabold text-gray-900 dark:text-gray-100">Customers</h1>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{customers.length} registered customers</p>
           </div>
           {totalPending > 0 && (
-            <div className="bg-orange-50 border border-orange-200 rounded-xl px-4 py-2">
+            <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 rounded-xl px-4 py-2">
               <p className="text-xs text-orange-600">Total Pending</p>
               <p className="text-lg font-extrabold text-orange-700">₹{totalPending.toLocaleString()}</p>
             </div>
@@ -80,14 +80,14 @@ export default function AdminCustomers() {
         ) : filtered.length === 0 ? (
           <div className="text-center py-16">
             <Users className="h-16 w-16 text-gray-200 mx-auto mb-4" />
-            <p className="text-gray-500">{search ? 'No customers found' : 'No customers yet'}</p>
+            <p className="text-gray-500 dark:text-gray-400">{search ? 'No customers found' : 'No customers yet'}</p>
           </div>
         ) : (
           <div className="space-y-3">
             {filtered.map((cust) => (
               <Card
                 key={cust.mobile}
-                className="cursor-pointer hover:shadow-md transition-shadow"
+                className="cursor-pointer hover:shadow-lg dark:hover:shadow-gray-900/40 transition-shadow"
                 onClick={() => setCustomerMobile(cust.mobile)}
               >
                 <CardContent className="p-4">
@@ -97,18 +97,18 @@ export default function AdminCustomers() {
                         <span className="text-white font-bold text-lg">{cust.name.charAt(0).toUpperCase()}</span>
                       </div>
                       <div>
-                        <p className="font-bold text-gray-900">{cust.name}</p>
-                        <p className="text-xs text-gray-500">{cust.mobile}</p>
+                        <p className="font-bold text-gray-900 dark:text-gray-100">{cust.name}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">{cust.mobile}</p>
                         {cust.businessName && <p className="text-xs text-gray-400">{cust.businessName}</p>}
                       </div>
                     </div>
                     <div className="text-right flex items-center gap-4">
                       <div className="hidden sm:block">
                         <div className="flex items-center gap-3 text-xs">
-                          <span className="flex items-center gap-1 text-gray-500">
+                          <span className="flex items-center gap-1 text-gray-500 dark:text-gray-400">
                             <Package className="h-3 w-3" /> {cust.totalOrders} orders
                           </span>
-                          <span className="flex items-center gap-1 text-gray-500">
+                          <span className="flex items-center gap-1 text-gray-500 dark:text-gray-400">
                             <IndianRupee className="h-3 w-3" /> {cust.totalItems} items
                           </span>
                         </div>

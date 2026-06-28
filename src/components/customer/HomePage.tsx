@@ -33,7 +33,7 @@ export default function HomePage() {
   const hasCartItems = items.length > 0;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-[#111827] dark:bg-[#111827]">
       {/* Hero Banner */}
       <div className="bg-gradient-to-r from-[#0C831F] to-[#0fa828] text-white">
         <div className="max-w-7xl mx-auto px-4 py-8 md:py-12">
@@ -74,7 +74,7 @@ export default function HomePage() {
       </div>
 
       {/* Features Strip */}
-      <div className="bg-white border-b">
+      <div className="bg-white dark:bg-gray-800 dark:bg-gray-800 border-b">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="grid grid-cols-3 gap-4">
             {[
@@ -84,7 +84,7 @@ export default function HomePage() {
             ].map((f, i) => (
               <div key={i} className="flex items-center gap-2 justify-center">
                 <f.icon className={`h-5 w-5 ${f.color}`} />
-                <span className="text-xs md:text-sm font-medium text-gray-700">{f.text}</span>
+                <span className="text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300">{f.text}</span>
               </div>
             ))}
           </div>
@@ -95,7 +95,7 @@ export default function HomePage() {
       {categories.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 mt-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg md:text-xl font-bold text-gray-900">Shop by Category</h2>
+            <h2 className="text-lg md:text-xl font-bold text-gray-900 dark:text-gray-100">Shop by Category</h2>
             <Button variant="link" className="text-[#0C831F] text-sm" onClick={() => useNavStore.getState().navigate('categories')}>
               See All
             </Button>
@@ -107,12 +107,12 @@ export default function HomePage() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setCategory(cat.slug)}
-                className="flex-shrink-0 flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-white hover:shadow-md transition-all w-20"
+                className="flex-shrink-0 flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-white hover:shadow-lg dark:hover:shadow-gray-900/40 transition-all w-20"
               >
-                <div className="w-14 h-14 bg-green-50 rounded-full flex items-center justify-center border-2 border-green-100">
+                <div className="w-14 h-14 bg-green-50 dark:bg-green-900/20 rounded-full flex items-center justify-center border-2 border-green-100 dark:border-green-800">
                   <span className="text-2xl">{categoryEmojis[cat.slug] || '📦'}</span>
                 </div>
-                <span className="text-[11px] font-medium text-gray-700 text-center leading-tight">{cat.name}</span>
+                <span className="text-[11px] font-medium text-gray-700 dark:text-gray-300 text-center leading-tight">{cat.name}</span>
               </motion.button>
             ))}
           </div>
@@ -123,7 +123,7 @@ export default function HomePage() {
       {featuredProducts.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 mt-8">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg md:text-xl font-bold text-gray-900">Featured Products</h2>
+            <h2 className="text-lg md:text-xl font-bold text-gray-900 dark:text-gray-100">Featured Products</h2>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
             {featuredProducts.slice(0, 10).map((p) => (
@@ -137,7 +137,7 @@ export default function HomePage() {
       {bestSellingProducts.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 mt-8">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg md:text-xl font-bold text-gray-900">Best Selling</h2>
+            <h2 className="text-lg md:text-xl font-bold text-gray-900 dark:text-gray-100">Best Selling</h2>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
             {bestSellingProducts.slice(0, 10).map((p) => (

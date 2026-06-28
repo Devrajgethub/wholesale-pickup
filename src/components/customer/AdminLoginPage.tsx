@@ -85,19 +85,19 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-[#111827] dark:bg-[#111827] flex items-center justify-center px-4 py-8">
       <div className="w-full max-w-sm">
         {/* Logo / Header */}
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-[#0C831F] rounded-2xl flex items-center justify-center mx-auto mb-4">
             <Package className="h-8 w-8 text-white" />
           </div>
-          <h1 className="text-2xl font-extrabold text-gray-900">Mitra Bros Mart</h1>
-          <p className="text-sm text-gray-500 mt-1">Enter your details to continue</p>
+          <h1 className="text-2xl font-extrabold text-gray-900 dark:text-gray-100">Mitra Bros Mart</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Enter your details to continue</p>
         </div>
 
         {/* Step 1: Name + Phone */}
-        <div className="bg-white rounded-2xl p-6 shadow-sm">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm dark:shadow-gray-900/30">
           <form onSubmit={handleContinue} className="space-y-4">
             <div>
               <Label htmlFor="name" className="text-sm font-medium">Your Name</Label>
@@ -157,7 +157,7 @@ export default function LoginPage() {
 
         {/* Step 2: Admin Password (only when admin phone is entered) */}
         {isStep2 && (
-          <div className="bg-white rounded-2xl p-6 shadow-sm mt-4 border-2 border-green-100">
+          <div className="bg-white dark:bg-gray-800 dark:bg-gray-800 rounded-2xl p-6 shadow-sm mt-4 border-2 border-green-100 dark:border-green-800">
             <div className="flex items-center gap-2 mb-4">
               <ShieldCheck className="h-5 w-5 text-[#0C831F]" />
               <p className="text-sm font-bold text-[#0C831F]">Admin Access Detected</p>

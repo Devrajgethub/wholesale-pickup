@@ -13,9 +13,9 @@ import { motion } from 'framer-motion';
 const statusFlow = ['Pending', 'Accepted', 'Packing', 'Ready for Pickup', 'Completed'];
 const statusColor: Record<string, string> = {
   'Pending': 'bg-yellow-100 text-yellow-800',
-  'Accepted': 'bg-blue-100 text-blue-800',
+  'Accepted': 'bg-blue-100 dark:bg-blue-900/30 text-blue-800',
   'Packing': 'bg-orange-100 text-orange-800',
-  'Ready for Pickup': 'bg-green-100 text-green-800',
+  'Ready for Pickup': 'bg-green-100 dark:bg-green-900/30 text-green-800',
   'Completed': 'bg-green-200 text-green-900',
   'Cancelled': 'bg-red-100 text-red-800',
 };
@@ -102,11 +102,11 @@ export default function AdminOrders() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-[#111827] dark:bg-[#111827]">
       <div className="max-w-7xl mx-auto px-4 py-6">
         <div className="mb-6">
-          <h1 className="text-2xl font-extrabold text-gray-900">Orders</h1>
-          <p className="text-sm text-gray-500">{orders.length} total orders</p>
+          <h1 className="text-2xl font-extrabold text-gray-900 dark:text-gray-100">Orders</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400">{orders.length} total orders</p>
         </div>
 
         {/* Filters */}
@@ -137,9 +137,9 @@ export default function AdminOrders() {
             const count = s === 'all' ? orders.length : orders.filter((o: Order) => o.orderStatus === s).length;
             return (
               <button key={s} onClick={() => setStatusFilter(s)}
-                className={`p-2 rounded-lg text-xs font-medium text-center transition-colors ${statusFilter === s ? 'bg-[#0C831F] text-white' : 'bg-white text-gray-600 hover:bg-gray-100 border'}`}>
+                className={`p-2 rounded-lg text-xs font-medium text-center transition-colors ${statusFilter === s ? 'bg-[#0C831F] text-white' : 'bg-white text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:bg-gray-700 border'}`}>
                 {s === 'all' ? 'All' : s}
-                <div className={`text-lg font-extrabold ${statusFilter === s ? 'text-white' : 'text-gray-900'}`}>{count}</div>
+                <div className={`text-lg font-extrabold ${statusFilter === s ? 'text-white' : 'text-gray-900 dark:text-gray-100'}`}>{count}</div>
               </button>
             );
           })}
@@ -157,11 +157,11 @@ export default function AdminOrders() {
                       <div className="flex items-center gap-3">
                         <div>
                           <p className="font-extrabold text-[#0C831F] text-lg">#{order.orderId}</p>
-                          <p className="text-xs text-gray-500">{new Date(order.createdAt).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">{new Date(order.createdAt).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className={`px-3 py-1 rounded-full text-xs font-bold ${statusColor[order.orderStatus] || 'bg-gray-100'}`}>
+                        <span className={`px-3 py-1 rounded-full text-xs font-bold ${statusColor[order.orderStatus] || 'bg-gray-100 dark:bg-gray-700'}`}>
                           {order.orderStatus}
                         </span>
                         <Badge variant="outline" className="text-xs">
@@ -173,25 +173,25 @@ export default function AdminOrders() {
                     {/* Customer Info */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3 text-sm">
                       <div>
-                        <p className="text-gray-500 text-xs">Customer</p>
+                        <p className="text-gray-500 dark:text-gray-400 text-xs">Customer</p>
                         <p className="font-medium">{order.customerName}</p>
                       </div>
                       <div>
-                        <p className="text-gray-500 text-xs">Mobile</p>
+                        <p className="text-gray-500 dark:text-gray-400 text-xs">Mobile</p>
                         <p className="font-medium">{order.mobile}</p>
                       </div>
                       <div>
-                        <p className="text-gray-500 text-xs">Items</p>
+                        <p className="text-gray-500 dark:text-gray-400 text-xs">Items</p>
                         <p className="font-medium">{order.items.length} items</p>
                       </div>
                       <div>
-                        <p className="text-gray-500 text-xs">Total</p>
+                        <p className="text-gray-500 dark:text-gray-400 text-xs">Total</p>
                         <p className="font-extrabold text-lg">₹{order.totalAmount.toLocaleString()}</p>
                       </div>
                     </div>
 
                     {/* Items Preview */}
-                    <div className="text-xs text-gray-600 mb-3 line-clamp-1">
+                    <div className="text-xs text-gray-600 dark:text-gray-400 mb-3 line-clamp-1">
                       {order.items.map((item, i) => `${item.productName} x${item.quantity}`).join(' | ')}
                     </div>
 
@@ -235,7 +235,7 @@ export default function AdminOrders() {
                       )}
 
                       {/* WhatsApp */}
-                      <Button variant="outline" size="sm" className="h-8 text-xs text-green-600 border-green-300 hover:bg-green-50"
+                      <Button variant="outline" size="sm" className="h-8 text-xs text-green-600 border-green-300 hover:bg-green-50 dark:bg-green-900/20"
                         onClick={(e) => sendWhatsApp(order, e)}>
                         <MessageCircle className="h-3 w-3 mr-1" /> WhatsApp
                       </Button>
@@ -254,7 +254,7 @@ export default function AdminOrders() {
           {filtered.length === 0 && (
             <div className="text-center py-16">
               <Package className="h-16 w-16 text-gray-200 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-600">No orders found</h3>
+              <h3 className="text-lg font-medium text-gray-600 dark:text-gray-400">No orders found</h3>
             </div>
           )}
         </div>
