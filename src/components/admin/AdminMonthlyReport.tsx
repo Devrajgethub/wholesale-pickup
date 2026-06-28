@@ -188,6 +188,7 @@ export default function AdminMonthlyReport() {
                           <div>
                             <p className="font-bold text-gray-900">#{order.orderId}</p>
                             <p className="text-xs text-gray-500">{new Date(order.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+                            <p className="text-[10px] text-gray-400">{new Date(order.createdAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true })}</p>
                             <p className="text-xs text-gray-400 mt-1">
                               {order.items.map((i: any, idx: number) => (
                                 <span key={idx}>{i.productName} x{i.quantity}{idx < order.items.length - 1 ? ', ' : ''}</span>
@@ -216,6 +217,7 @@ export default function AdminMonthlyReport() {
                           <th className="text-center p-3 text-xs font-bold text-gray-500 uppercase">Orders</th>
                           <th className="text-center p-3 text-xs font-bold text-gray-500 uppercase">Items</th>
                           <th className="text-right p-3 text-xs font-bold text-gray-500 uppercase">Total Payment</th>
+                          <th className="text-right p-3 text-xs font-bold text-gray-500 uppercase">Last Order</th>
                           <th className="p-3"></th>
                         </tr>
                       </thead>
@@ -235,6 +237,10 @@ export default function AdminMonthlyReport() {
                             </td>
                             <td className="text-right p-3">
                               <span className="text-sm font-extrabold text-[#0C831F]">₹{cust.totalPayment.toLocaleString()}</span>
+                            </td>
+                            <td className="text-right p-3">
+                              <p className="text-xs text-gray-500">{new Date(cust.orders[0]?.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</p>
+                              <p className="text-[10px] text-gray-400">{new Date(cust.orders[0]?.createdAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true })}</p>
                             </td>
                             <td className="p-3 text-right">
                               <ChevronRight className="h-4 w-4 text-gray-400 inline" />
