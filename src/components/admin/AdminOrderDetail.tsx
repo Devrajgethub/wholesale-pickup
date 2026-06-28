@@ -57,8 +57,7 @@ export default function AdminOrderDetail() {
 
   const sendWhatsApp = () => {
     const shopName = 'Mitra Bros Mart';
-    const payment = order.paymentMethod === 'Cash at Shop' ? 'Payment: Cash at Shop' : 'Payment: Online Paid';
-    const message = `Hello ${order.customerName},\n\nAapka order #${order.orderId} ready hai.\n\nPlease shop par aakar apna naam ya order ID batayein.\nShop: ${shopName}\n${payment}\n\nThank you.`;
+    const message = `Hello ${order.customerName},\n\nAapka order #${order.orderId} ready hai.\n\nPlease shop par aakar apna naam ya order ID batayein.\nShop: ${shopName}\nPayment: Cash at Shop\n\nThank you.`;
     window.open(`https://wa.me/91${order.mobile}?text=${encodeURIComponent(message)}`, '_blank');
   };
 

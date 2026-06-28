@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useState } from 'react';
@@ -21,7 +21,7 @@ export default function CheckoutPage() {
   const [name, setName] = useState('');
   const [mobile, setMobile] = useState('');
   const [pickupDate, setPickupDate] = useState<Date>();
-  const [paymentMethod, setPaymentMethod] = useState('Cash at Shop');
+
   const [specialNote, setSpecialNote] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -56,7 +56,6 @@ export default function CheckoutPage() {
             price: i.price,
             productId: i.productId,
           })),
-          paymentMethod,
           specialNote,
           pickupDate: pickupDate ? format(pickupDate, 'yyyy-MM-dd') : '',
           userId: null,
@@ -147,27 +146,16 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          {/* Payment Method */}
+          {/* Payment Info */}
           <div className="bg-white rounded-xl p-5 shadow-sm">
             <h3 className="font-bold text-gray-900 mb-4">Payment Method</h3>
-            <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod} className="space-y-3">
-              <div className="flex items-center space-x-3 p-3 border rounded-xl hover:bg-gray-50 cursor-pointer">
-                <RadioGroupItem value="Cash at Shop" id="cash" />
-                <Label htmlFor="cash" className="cursor-pointer flex-1">
-                  <div className="font-medium text-sm">Pay at Shop (Cash)</div>
-                  <div className="text-xs text-gray-500">Pay when you pick up your order</div>
-                </Label>
-                <span className="text-xl">💵</span>
+            <div className="flex items-center space-x-3 p-3 border rounded-xl bg-gray-50">
+              <span className="text-xl">💵</span>
+              <div>
+                <div className="font-medium text-sm">Cash at Shop</div>
+                <div className="text-xs text-gray-500">Pay when you pick up your order</div>
               </div>
-              <div className="flex items-center space-x-3 p-3 border rounded-xl hover:bg-gray-50 cursor-pointer">
-                <RadioGroupItem value="Online Paid" id="online" />
-                <Label htmlFor="online" className="cursor-pointer flex-1">
-                  <div className="font-medium text-sm">Pay Online (UPI)</div>
-                  <div className="text-xs text-gray-500">Pay via UPI QR / PhonePe / GPay</div>
-                </Label>
-                <span className="text-xl">📱</span>
-              </div>
-            </RadioGroup>
+            </div>
           </div>
 
           {/* Special Note */}
