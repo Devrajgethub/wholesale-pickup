@@ -172,6 +172,7 @@ export default function Header() {
               { label: 'Add Product', page: 'admin-add-product' as const },
               { label: 'Orders', page: 'admin-orders' as const },
               { label: 'Monthly Report', page: 'admin-monthly-report' as const },
+              { label: 'Customers', page: 'admin-customers' as const },
             ].map((item) => (
               <button
                 key={item.page}

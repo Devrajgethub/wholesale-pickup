@@ -85,7 +85,9 @@ export type PageName =
   | 'admin-edit-product'
   | 'admin-orders'
   | 'admin-order-detail'
-  | 'admin-monthly-report';
+  | 'admin-monthly-report'
+  | 'admin-customers'
+  | 'admin-customer-detail';
 
 // ============ NAVIGATION STORE ============
 interface NavState {
@@ -93,12 +95,14 @@ interface NavState {
   selectedCategory: string;
   selectedProductId: string;
   selectedOrderId: string;
+  selectedCustomerMobile: string;
   searchQuery: string;
   navigate: (page: PageName) => void;
   setCategory: (slug: string) => void;
   setProduct: (id: string) => void;
   setSelectedProductId: (id: string) => void;
   setOrder: (id: string) => void;
+  setCustomerMobile: (mobile: string) => void;
   setSearch: (q: string) => void;
 }
 
@@ -107,12 +111,14 @@ export const useNavStore = create<NavState>((set) => ({
   selectedCategory: '',
   selectedProductId: '',
   selectedOrderId: '',
+  selectedCustomerMobile: '',
   searchQuery: '',
   navigate: (page) => set({ currentPage: page }),
   setCategory: (slug) => set({ selectedCategory: slug, currentPage: 'products' }),
   setProduct: (id) => set({ selectedProductId: id, currentPage: 'product-detail' }),
   setSelectedProductId: (id) => set({ selectedProductId: id }),
   setOrder: (id) => set({ selectedOrderId: id, currentPage: 'admin-order-detail' }),
+  setCustomerMobile: (mobile) => set({ selectedCustomerMobile: mobile, currentPage: 'admin-customer-detail' }),
   setSearch: (q) => set({ searchQuery: q }),
 }));
 

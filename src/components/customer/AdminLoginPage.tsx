@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { useState } from 'react';
 import { Lock, Loader2, Package, ShieldCheck, Phone, User, ArrowRight } from 'lucide-react';
 
-const ADMIN_PHONE = '7908117295';
+const ADMIN_PHONES = ['7908117295', '9682022501'];
 
 export default function LoginPage() {
   const { login, adminLogin } = useAuthStore();
@@ -24,7 +24,7 @@ export default function LoginPage() {
   const [passwordError, setPasswordError] = useState('');
   const [passwordLoading, setPasswordLoading] = useState(false);
 
-  const isStep2 = mobile.length === 10 && mobile === ADMIN_PHONE;
+  const isStep2 = mobile.length === 10 && ADMIN_PHONES.includes(mobile);
 
   // Step 1: Continue button
   const handleContinue = async (e: React.FormEvent) => {
@@ -35,7 +35,7 @@ export default function LoginPage() {
     if (mobile.length < 10) { setStepError('Please enter valid 10-digit mobile number'); return; }
 
     // If admin phone, show step 2 (password)
-    if (mobile === ADMIN_PHONE) {
+    if (ADMIN_PHONES.includes(mobile)) {
       return; // Step 2 will show automatically via isStep2
     }
 
@@ -135,7 +135,7 @@ export default function LoginPage() {
             {stepError && <p className="text-sm text-red-500">{stepError}</p>}
 
             {/* For non-admin: Continue button goes to home */}
-            {mobile.length === 10 && mobile !== ADMIN_PHONE ? (
+            {mobile.length === 10 && !ADMIN_PHONES.includes(mobile) ? (
               <Button
                 type="submit"
                 className="w-full bg-[#0C831F] hover:bg-[#0a6e1a] text-white font-bold h-12 rounded-xl"
