@@ -1,6 +1,6 @@
 'use client';
 
-import { useNavStore, useCartStore, useDataStore, Product } from '@/lib/store';
+import { useNavStore, useCartStore, useDataStore, useLanguageStore, Product } from '@/lib/store';
 import { Button } from '@/components/ui/button';
 import { Minus, Plus, ShoppingCart } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -12,6 +12,7 @@ interface ProductCardProps {
 export default function ProductCard({ product }: ProductCardProps) {
   const { setProduct } = useNavStore();
   const { items, addItem, updateQuantity, removeItem } = useCartStore();
+  const { t } = useLanguageStore();
   const cartItem = items.find(i => i.productId === product.id);
 
   const discount = product.mrp > product.price
@@ -39,21 +40,21 @@ export default function ProductCard({ product }: ProductCardProps) {
         className="border border-[#0C831F] rounded-xl p-3 bg-[#0C831F]/5 flex flex-col h-full"
       >
         <div className="cursor-pointer" onClick={() => setProduct(product.id)}>
-          <div className="aspect-square bg-gray-50 dark:bg-[#111827] rounded-lg mb-2 flex items-center justify-center overflow-hidden">
+          <div className="aspect-square bg-gray-50 rounded-lg mb-2 flex items-center justify-center overflow-hidden">
             {product.image ? (
               <img src={product.image} alt={product.name} className="w-full h-full object-cover rounded-lg" />
             ) : (
-              <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
                 <span className="text-2xl">📦</span>
               </div>
             )}
           </div>
-          <p className="text-sm font-medium text-gray-900 dark:text-gray-100 line-clamp-2 leading-tight min-h-[2.5rem]">{product.name}</p>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{product.unit}</p>
+          <p className="text-sm font-medium text-gray-900 line-clamp-2 leading-tight min-h-[2.5rem]">{product.name}</p>
+          <p className="text-xs text-gray-500 mt-1">{product.unit}</p>
         </div>
         <div className="mt-auto pt-2">
           <div className="flex items-baseline gap-2 mb-2">
-            <span className="text-base font-bold text-gray-900 dark:text-gray-100">₹{product.price.toLocaleString()}</span>
+            <span className="text-base font-bold text-gray-900">₹{product.price.toLocaleString()}</span>
             {product.mrp > product.price && (
               <span className="text-xs text-gray-400 line-through">₹{product.mrp.toLocaleString()}</span>
             )}
@@ -78,30 +79,30 @@ export default function ProductCard({ product }: ProductCardProps) {
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ y: -2 }}
       transition={{ duration: 0.2 }}
-      className="border border-gray-100 dark:border-gray-700 rounded-xl p-3 bg-white dark:bg-gray-800 shadow-sm hover:shadow-lg dark:hover:shadow-gray-900/40 transition-shadow flex flex-col h-full"
+      className="border border-gray-100 rounded-xl p-3 bg-white shadow-sm hover:shadow-md transition-shadow flex flex-col h-full"
     >
       <div className="cursor-pointer" onClick={() => setProduct(product.id)}>
-        <div className="aspect-square bg-gray-50 dark:bg-[#111827] rounded-lg mb-2 flex items-center justify-center overflow-hidden relative">
+        <div className="aspect-square bg-gray-50 rounded-lg mb-2 flex items-center justify-center overflow-hidden relative">
           {product.image ? (
             <img src={product.image} alt={product.name} className="w-full h-full object-cover rounded-lg" />
           ) : (
-            <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
               <span className="text-2xl">📦</span>
             </div>
           )}
           {discount > 0 && (
-            <span className="absolute top-2 left-2 bg-yellow-400 text-green-900 text-[10px] font-bold px-1.5 py-0.5 rounded">{discount}% OFF</span>
+            <span className="absolute top-2 left-2 bg-yellow-400 text-green-900 text-[10px] font-bold px-1.5 py-0.5 rounded">{discount}% {t('detail.off')}</span>
           )}
           {product.stock <= 5 && product.stock > 0 && (
-            <span className="absolute top-2 right-2 bg-red-50 dark:bg-red-900/200 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">Low Stock</span>
+            <span className="absolute top-2 right-2 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">{t('card.lowStock')}</span>
           )}
         </div>
-        <p className="text-sm font-medium text-gray-900 dark:text-gray-100 line-clamp-2 leading-tight min-h-[2.5rem]">{product.name}</p>
-        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{product.unit}</p>
+        <p className="text-sm font-medium text-gray-900 line-clamp-2 leading-tight min-h-[2.5rem]">{product.name}</p>
+        <p className="text-xs text-gray-500 mt-1">{product.unit}</p>
       </div>
       <div className="mt-auto pt-2">
         <div className="flex items-baseline gap-2 mb-2">
-          <span className="text-base font-bold text-gray-900 dark:text-gray-100">₹{product.price.toLocaleString()}</span>
+          <span className="text-base font-bold text-gray-900">₹{product.price.toLocaleString()}</span>
           {product.mrp > product.price && (
             <span className="text-xs text-gray-400 line-through">₹{product.mrp.toLocaleString()}</span>
           )}
@@ -111,11 +112,11 @@ export default function ProductCard({ product }: ProductCardProps) {
             className="w-full bg-[#0C831F] hover:bg-[#0a6e1a] text-white font-bold text-sm h-10 rounded-lg"
             onClick={handleAdd}
           >
-            ADD
+            {t('card.add')}
           </Button>
         ) : (
-          <Button className="w-full bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 font-bold text-sm h-10 rounded-lg cursor-not-allowed" disabled>
-            OUT OF STOCK
+          <Button className="w-full bg-gray-200 text-gray-500 font-bold text-sm h-10 rounded-lg cursor-not-allowed" disabled>
+            {t('card.outOfStock')}
           </Button>
         )}
       </div>

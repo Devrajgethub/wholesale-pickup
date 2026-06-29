@@ -1,24 +1,26 @@
 'use client';
 
-import { useNavStore, useCartStore, useAuthStore, useDataStore } from '@/lib/store';
-import { useTheme } from '@/components/ThemeProvider';
-import { Search, ShoppingCart, Menu, X, Package, ArrowLeft, LogOut, Sun, Moon } from 'lucide-react';
+import { useNavStore, useCartStore, useAuthStore, useDataStore, useLanguageStore } from '@/lib/store';
+import { Search, ShoppingCart, User, Menu, X, Package, ArrowLeft, ShieldCheck, LogOut, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useState } from 'react';
+import { languageNames, Language } from '@/lib/i18n';
+
+const languages: Language[] = ['en', 'hi', 'bn'];
 
 export default function Header() {
   const { currentPage, navigate, setSearch, searchQuery } = useNavStore();
   const { items } = useCartStore();
-  const { isLoggedIn, isAdmin, adminName, customerName, adminLogout, logout } = useAuthStore();
+  const { isAdmin, adminName, adminLogout } = useAuthStore();
   const { fetchProducts } = useDataStore();
-  const { theme, toggleTheme } = useTheme();
+  const { t, language, setLanguage } = useLanguageStore();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
 
   const itemCount = items.reduce((sum, i) => sum + i.quantity, 0);
-  const isCustomerPage = !currentPage.startsWith('admin') && currentPage !== 'login';
+  const isCustomerPage = !currentPage.startsWith('admin');
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,16 +30,8 @@ export default function Header() {
     }
   };
 
-  const handleLogout = () => {
-    if (isAdmin) { adminLogout(); } else { logout(); }
-    setMobileMenuOpen(false);
-    navigate('login');
-  };
-
-  if (currentPage === 'login') return null;
-
   return (
-    <header className="sticky top-0 z-50 bg-[#0C831F] text-white shadow-lg">
+    <header className="sticky top-0 z-50 bg-[#0C831F] text-white shadow-md">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Left: Logo + Back */}
@@ -48,12 +42,12 @@ export default function Header() {
               </Button>
             )}
             <button onClick={() => { if (isAdmin && !isCustomerPage) { navigate('admin-dashboard'); } else { navigate('home'); } }} className="flex items-center gap-2">
-              <div className="w-9 h-9 bg-yellow-400 rounded-lg flex items-center justify-center shadow-md">
+              <div className="w-9 h-9 bg-yellow-400 rounded-lg flex items-center justify-center">
                 <Package className="h-5 w-5 text-green-900" />
               </div>
               <div className="hidden sm:block">
                 <h1 className="text-lg font-bold leading-tight">Mitra Bros Mart</h1>
-                <p className="text-[10px] text-green-200 leading-tight">Order Online, Pick at Shop</p>
+                <p className="text-[10px] text-green-200 leading-tight">{t('header.tagline')}</p>
               </div>
             </button>
           </div>
@@ -63,20 +57,31 @@ export default function Header() {
             <div className="relative w-full">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
-                placeholder="Search wholesale products..."
+                placeholder={t('header.searchPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => setSearch(e.target.value)}
-                className="pl-10 bg-white/95 dark:bg-gray-800/95 text-gray-900 dark:text-gray-100 border-0 rounded-full placeholder:text-gray-400 dark:placeholder:text-gray-500 focus-visible:ring-2 focus-visible:ring-yellow-400"
+                className="pl-10 bg-white/95 text-gray-900 border-0 rounded-full placeholder:text-gray-400 focus-visible:ring-2 focus-visible:ring-yellow-400"
               />
             </div>
           </form>
 
           {/* Right: Actions */}
           <div className="flex items-center gap-1">
-            {/* Dark Mode Toggle */}
-            <Button variant="ghost" size="icon" className="text-white hover:bg-white/10" onClick={toggleTheme}>
-              {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-            </Button>
+            {/* Language Selector */}
+            <div className="relative flex items-center">
+              <Globe className="h-4 w-4 text-green-200 mr-1" />
+              <select
+                value={language}
+                onChange={(e) => setLanguage(e.target.value as Language)}
+                className="bg-white/10 text-white text-xs rounded-md px-1.5 py-1 border border-white/20 focus:outline-none focus:ring-1 focus:ring-yellow-400 cursor-pointer appearance-auto"
+              >
+                {languages.map((lang) => (
+                  <option key={lang} value={lang} className="text-gray-900">
+                    {languageNames[lang]}
+                  </option>
+                ))}
+              </select>
+            </div>
 
             {/* Mobile Search Toggle */}
             <Button variant="ghost" size="icon" className="text-white hover:bg-white/10 md:hidden" onClick={() => setSearchOpen(!searchOpen)}>
@@ -99,30 +104,27 @@ export default function Header() {
             {isCustomerPage && (
               <Button variant="ghost" size="sm" className="text-white hover:bg-white/10 text-xs" onClick={() => navigate('my-orders')}>
                 <Package className="h-4 w-4 mr-1" />
-                <span className="hidden sm:inline">My Orders</span>
+                <span className="hidden sm:inline">{t('header.myOrders')}</span>
               </Button>
             )}
 
-            {/* User Info + Logout */}
+            {/* Admin Login / Admin Logout */}
             {isAdmin ? (
               <div className="flex items-center gap-1">
                 <span className="text-xs text-yellow-300 hidden sm:block px-2">
-                  Admin: {adminName}
+                  <ShieldCheck className="h-3.5 w-3.5 inline mr-1" />
+                  {adminName}
                 </span>
-                <Button variant="ghost" size="icon" className="text-white hover:bg-white/10" onClick={handleLogout}>
+                <Button variant="ghost" size="icon" className="text-white hover:bg-white/10" onClick={() => { adminLogout(); navigate('home'); }}>
                   <LogOut className="h-4 w-4" />
                 </Button>
               </div>
-            ) : isLoggedIn ? (
-              <div className="flex items-center gap-1">
-                <span className="text-xs text-green-200 hidden sm:block px-2">
-                  {customerName}
-                </span>
-                <Button variant="ghost" size="icon" className="text-white hover:bg-white/10" onClick={handleLogout}>
-                  <LogOut className="h-4 w-4" />
-                </Button>
-              </div>
-            ) : null}
+            ) : (
+              <Button variant="ghost" size="sm" className="text-white hover:bg-white/10" onClick={() => navigate('admin-login')}>
+                <ShieldCheck className="h-4 w-4 mr-1" />
+                <span className="hidden sm:inline text-xs">{t('header.admin')}</span>
+              </Button>
+            )}
 
             {/* Mobile Menu */}
             <Button variant="ghost" size="icon" className="text-white hover:bg-white/10 md:hidden" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
@@ -137,10 +139,10 @@ export default function Header() {
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
-                placeholder="Search products..."
+                placeholder={t('header.searchPlaceholderMobile')}
                 value={searchQuery}
                 onChange={(e) => setSearch(e.target.value)}
-                className="pl-10 bg-white/95 dark:bg-gray-800/95 text-gray-900 dark:text-gray-100 border-0 rounded-full placeholder:text-gray-400"
+                className="pl-10 bg-white/95 text-gray-900 border-0 rounded-full placeholder:text-gray-400"
                 autoFocus
               />
             </div>
@@ -151,14 +153,18 @@ export default function Header() {
         {mobileMenuOpen && (
           <div className="pb-3 md:hidden border-t border-white/10">
             <div className="flex flex-col gap-1 pt-2">
-              {isCustomerPage && (
-                <Button variant="ghost" className="justify-start text-white hover:bg-white/10" onClick={() => { navigate('my-orders'); setMobileMenuOpen(false); }}>
-                  <Package className="h-4 w-4 mr-2" /> My Orders
+              <Button variant="ghost" className="justify-start text-white hover:bg-white/10" onClick={() => { navigate('my-orders'); setMobileMenuOpen(false); }}>
+                <Package className="h-4 w-4 mr-2" /> {t('header.myOrders')}
+              </Button>
+              {isAdmin ? (
+                <Button variant="ghost" className="justify-start text-white hover:bg-white/10" onClick={() => { adminLogout(); navigate('home'); setMobileMenuOpen(false); }}>
+                  <LogOut className="h-4 w-4 mr-2" /> {t('header.logoutAdmin')}
+                </Button>
+              ) : (
+                <Button variant="ghost" className="justify-start text-white hover:bg-white/10" onClick={() => { navigate('admin-login'); setMobileMenuOpen(false); }}>
+                  <ShieldCheck className="h-4 w-4 mr-2" /> {t('header.adminLogin')}
                 </Button>
               )}
-              <Button variant="ghost" className="justify-start text-red-200 hover:bg-white/10" onClick={handleLogout}>
-                <LogOut className="h-4 w-4 mr-2" /> Logout ({isAdmin ? 'Admin' : customerName})
-              </Button>
             </div>
           </div>
         )}
@@ -166,15 +172,13 @@ export default function Header() {
 
       {/* Admin Navigation Bar */}
       {isAdmin && (
-        <div className="bg-green-900 dark:bg-green-950 border-t border-green-800">
+        <div className="bg-green-900 border-t border-green-800">
           <div className="max-w-7xl mx-auto px-4 flex items-center gap-1 overflow-x-auto scrollbar-hide">
             {[
-              { label: 'Dashboard', page: 'admin-dashboard' as const },
-              { label: 'Products', page: 'admin-products' as const },
-              { label: 'Add Product', page: 'admin-add-product' as const },
-              { label: 'Orders', page: 'admin-orders' as const },
-              { label: 'Monthly Report', page: 'admin-monthly-report' as const },
-              { label: 'Customers', page: 'admin-customers' as const },
+              { label: t('header.dashboard'), page: 'admin-dashboard' as const },
+              { label: t('header.products'), page: 'admin-products' as const },
+              { label: t('header.addProduct'), page: 'admin-add-product' as const },
+              { label: t('header.orders'), page: 'admin-orders' as const },
             ].map((item) => (
               <button
                 key={item.page}

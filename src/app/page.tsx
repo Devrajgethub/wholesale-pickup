@@ -1,6 +1,6 @@
 'use client';
 
-import { useNavStore, useDataStore } from '@/lib/store';
+import { useNavStore, useDataStore, useLanguageStore } from '@/lib/store';
 import Header from '@/components/customer/Header';
 import HomePage from '@/components/customer/HomePage';
 import CategoriesPage from '@/components/customer/CategoriesPage';
@@ -16,15 +16,13 @@ import AdminAddProduct from '@/components/admin/AdminAddProduct';
 import AdminEditProduct from '@/components/admin/AdminEditProduct';
 import AdminOrders from '@/components/admin/AdminOrders';
 import AdminOrderDetail from '@/components/admin/AdminOrderDetail';
-import AdminMonthlyReport from '@/components/admin/AdminMonthlyReport';
-import AdminCustomers from '@/components/admin/AdminCustomers';
-import AdminCustomerDetail from '@/components/admin/AdminCustomerDetail';
 import { useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 
 function Footer() {
+  const { t } = useLanguageStore();
   return (
-    <footer className="bg-gray-900 dark:bg-gray-950 dark:bg-gray-950 dark:bg-gray-950 text-gray-400 dark:text-gray-500 dark:text-gray-500 mt-auto">
+    <footer className="bg-gray-900 text-gray-400 mt-auto">
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
@@ -34,29 +32,29 @@ function Footer() {
               </div>
               <span className="font-bold text-white text-lg">Mitra Bros Mart</span>
             </div>
-            <p className="text-sm leading-relaxed">Your trusted wholesale partner. Order online, pick up at shop. Best prices guaranteed on all bulk orders.</p>
+            <p className="text-sm leading-relaxed">{t('footer.description')}</p>
           </div>
           <div>
-            <h4 className="font-bold text-white mb-3">Quick Links</h4>
+            <h4 className="font-bold text-white mb-3">{t('footer.quickLinks')}</h4>
             <ul className="space-y-2 text-sm">
-              <li className="hover:text-white cursor-pointer transition-colors">About Us</li>
-              <li className="hover:text-white cursor-pointer transition-colors">Contact</li>
-              <li className="hover:text-white cursor-pointer transition-colors">Terms & Conditions</li>
-              <li className="hover:text-white cursor-pointer transition-colors">Privacy Policy</li>
+              <li className="hover:text-white cursor-pointer transition-colors">{t('footer.aboutUs')}</li>
+              <li className="hover:text-white cursor-pointer transition-colors">{t('footer.contact')}</li>
+              <li className="hover:text-white cursor-pointer transition-colors">{t('footer.terms')}</li>
+              <li className="hover:text-white cursor-pointer transition-colors">{t('footer.privacy')}</li>
             </ul>
           </div>
           <div>
-            <h4 className="font-bold text-white mb-3">Contact Us</h4>
+            <h4 className="font-bold text-white mb-3">{t('footer.contactUs')}</h4>
             <ul className="space-y-2 text-sm">
               <li className="font-medium text-white">Mitra Bros Mart</li>
               <li className="flex items-center gap-2"><span>📞</span> <a href="tel:+917908117295" className="hover:text-white transition-colors">+91 79081 17295</a></li>
-              <li>Hours: 8:00 AM - 9:00 PM</li>
-              <li>Mon - Sat</li>
+              <li>{t('footer.hours')}</li>
+              <li>{t('footer.days')}</li>
             </ul>
           </div>
         </div>
-        <div className="border-t border-gray-800 dark:border-gray-700 mt-8 pt-4 text-center text-xs">
-          <p>&copy; 2026 Mitra Bros Mart. All rights reserved.</p>
+        <div className="border-t border-gray-800 mt-8 pt-4 text-center text-xs">
+          <p>{t('footer.copyright')}</p>
         </div>
       </div>
     </footer>
@@ -65,11 +63,11 @@ function Footer() {
 
 function LoadingScreen() {
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-[#111827] dark:bg-[#111827] flex flex-col">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       <div className="h-16 bg-[#0C831F]">
         <div className="max-w-7xl mx-auto px-4 h-full flex items-center">
-          <Skeleton className="h-8 w-32 bg-white/20 dark:bg-white/10" />
-          <Skeleton className="h-10 w-64 bg-white/20 dark:bg-white/10 ml-auto rounded-full" />
+          <Skeleton className="h-8 w-32 bg-white/20" />
+          <Skeleton className="h-10 w-64 bg-white/20 ml-auto rounded-full" />
         </div>
       </div>
       <div className="max-w-7xl mx-auto px-4 py-4 flex-1">
@@ -102,16 +100,13 @@ function PageRouter() {
     'checkout': <CheckoutPage />,
     'order-success': <CheckoutPage />,
     'my-orders': <MyOrdersPage />,
-    'login': <AdminLoginPage />,
+    'admin-login': <AdminLoginPage />,
     'admin-dashboard': <AdminDashboard />,
     'admin-products': <AdminProducts />,
     'admin-add-product': <AdminAddProduct />,
     'admin-edit-product': <AdminEditProduct />,
     'admin-orders': <AdminOrders />,
     'admin-order-detail': <AdminOrderDetail />,
-    'admin-monthly-report': <AdminMonthlyReport />,
-    'admin-customers': <AdminCustomers />,
-    'admin-customer-detail': <AdminCustomerDetail />,
   };
 
   return pages[currentPage] || <HomePage />;
@@ -129,7 +124,7 @@ export default function App() {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-[#111827]">
+    <div className="min-h-screen flex flex-col bg-gray-50">
       <Header />
       <main className="flex-1">
         <PageRouter />

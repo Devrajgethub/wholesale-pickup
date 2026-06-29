@@ -1,6 +1,6 @@
 'use client';
 
-import { useDataStore, useNavStore, Product } from '@/lib/store';
+import { useDataStore, useNavStore, useLanguageStore, Product } from '@/lib/store';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -14,6 +14,7 @@ import { ArrowLeft, Loader2, CheckCircle, Package } from 'lucide-react';
 export default function AdminEditProduct() {
   const { products, categories, fetchProducts, fetchCategories } = useDataStore();
   const { selectedProductId, navigate } = useNavStore();
+  const { t } = useLanguageStore();
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [form, setForm] = useState({
@@ -69,42 +70,42 @@ export default function AdminEditProduct() {
 
   if (!product && products.length > 0) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-[#111827] dark:bg-[#111827] flex items-center justify-center px-4">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
         <div className="text-center">
-          <Package className="h-16 w-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-          <p className="text-gray-500 dark:text-gray-400">Product not found. Select a product from the list to edit.</p>
-          <Button className="mt-4 bg-[#0C831F] text-white" onClick={() => navigate('admin-products')}>Go to Products</Button>
+          <Package className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+          <p className="text-gray-500">{t('adminProduct.productNotFound')}</p>
+          <Button className="mt-4 bg-[#0C831F] text-white" onClick={() => navigate('admin-products')}>{t('adminProduct.goToProducts')}</Button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-[#111827] dark:bg-[#111827]">
+    <div className="min-h-screen bg-gray-50">
       <div className="max-w-2xl mx-auto px-4 py-6">
-        <Button variant="ghost" className="mb-4 text-gray-600 dark:text-gray-400" onClick={() => navigate('admin-products')}>
-          <ArrowLeft className="h-4 w-4 mr-2" /> Back to Products
+        <Button variant="ghost" className="mb-4 text-gray-600" onClick={() => navigate('admin-products')}>
+          <ArrowLeft className="h-4 w-4 mr-2" /> {t('adminProduct.backToProducts')}
         </Button>
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-xl">Edit Product</CardTitle>
+            <CardTitle className="text-xl">{t('adminProduct.editProduct')}</CardTitle>
           </CardHeader>
           <CardContent>
             {success ? (
               <div className="text-center py-8">
                 <CheckCircle className="h-12 w-12 text-[#0C831F] mx-auto mb-3" />
-                <p className="font-bold text-gray-900 dark:text-gray-100">Product updated successfully!</p>
+                <p className="font-bold text-gray-900">{t('adminProduct.updatedSuccess')}</p>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <Label>Product Name *</Label>
+                  <Label>{t('adminProduct.productName')}</Label>
                   <Input value={form.name} onChange={(e) => update('name', e.target.value)} className="mt-1.5" required />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label>Category *</Label>
+                    <Label>{t('adminProduct.categoryLabel')}</Label>
                     <Select value={form.categoryId} onValueChange={(v) => update('categoryId', v)}>
                       <SelectTrigger className="mt-1.5"><SelectValue /></SelectTrigger>
                       <SelectContent>
@@ -115,48 +116,48 @@ export default function AdminEditProduct() {
                     </Select>
                   </div>
                   <div>
-                    <Label>Unit</Label>
+                    <Label>{t('adminProduct.unitLabel')}</Label>
                     <Input value={form.unit} onChange={(e) => update('unit', e.target.value)} className="mt-1.5" />
                   </div>
                 </div>
                 <div className="grid grid-cols-3 gap-4">
                   <div>
-                    <Label>Wholesale Price *</Label>
+                    <Label>{t('adminProduct.wholesalePrice')}</Label>
                     <Input type="number" value={form.price} onChange={(e) => update('price', e.target.value)} className="mt-1.5" required />
                   </div>
                   <div>
-                    <Label>MRP</Label>
+                    <Label>{t('adminProduct.mrpLabel')}</Label>
                     <Input type="number" value={form.mrp} onChange={(e) => update('mrp', e.target.value)} className="mt-1.5" />
                   </div>
                   <div>
-                    <Label>Stock</Label>
+                    <Label>{t('adminProduct.stockLabel')}</Label>
                     <Input type="number" value={form.stock} onChange={(e) => update('stock', e.target.value)} className="mt-1.5" />
                   </div>
                 </div>
                 <div>
-                  <Label>Min Order Quantity</Label>
+                  <Label>{t('adminProduct.minOrderQty')}</Label>
                   <Input type="number" value={form.minQuantity} onChange={(e) => update('minQuantity', e.target.value)} />
                 </div>
                 <div>
-                  <Label>Description</Label>
+                  <Label>{t('adminProduct.description')}</Label>
                   <Textarea value={form.description} onChange={(e) => update('description', e.target.value)} rows={3} className="mt-1.5" />
                 </div>
                 <div className="flex flex-wrap gap-6">
                   <div className="flex items-center gap-2">
                     <Switch checked={form.isAvailable} onCheckedChange={(v) => update('isAvailable', v)} />
-                    <Label className="text-sm">Available</Label>
+                    <Label className="text-sm">{t('adminProduct.available')}</Label>
                   </div>
                   <div className="flex items-center gap-2">
                     <Switch checked={form.isFeatured} onCheckedChange={(v) => update('isFeatured', v)} />
-                    <Label className="text-sm">Featured</Label>
+                    <Label className="text-sm">{t('adminProduct.featured')}</Label>
                   </div>
                   <div className="flex items-center gap-2">
                     <Switch checked={form.isBestSelling} onCheckedChange={(v) => update('isBestSelling', v)} />
-                    <Label className="text-sm">Best Selling</Label>
+                    <Label className="text-sm">{t('adminProduct.bestSelling')}</Label>
                   </div>
                 </div>
                 <Button type="submit" className="w-full bg-[#0C831F] hover:bg-[#0a6e1a] text-white font-bold h-12" disabled={loading}>
-                  {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Update Product'}
+                  {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : t('adminProduct.updateProductBtn')}
                 </Button>
               </form>
             )}

@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { Language, translations } from './i18n';
 
 // ============ TYPES ============
 export interface CartItem {
@@ -78,16 +79,13 @@ export type PageName =
   | 'order-success'
   | 'my-orders'
   | 'order-status'
-  | 'login'
+  | 'admin-login'
   | 'admin-dashboard'
   | 'admin-products'
   | 'admin-add-product'
   | 'admin-edit-product'
   | 'admin-orders'
-  | 'admin-order-detail'
-  | 'admin-monthly-report'
-  | 'admin-customers'
-  | 'admin-customer-detail';
+  | 'admin-order-detail';
 
 // ============ NAVIGATION STORE ============
 interface NavState {
@@ -95,30 +93,26 @@ interface NavState {
   selectedCategory: string;
   selectedProductId: string;
   selectedOrderId: string;
-  selectedCustomerMobile: string;
   searchQuery: string;
   navigate: (page: PageName) => void;
   setCategory: (slug: string) => void;
   setProduct: (id: string) => void;
   setSelectedProductId: (id: string) => void;
   setOrder: (id: string) => void;
-  setCustomerMobile: (mobile: string) => void;
   setSearch: (q: string) => void;
 }
 
 export const useNavStore = create<NavState>((set) => ({
-  currentPage: 'login',
+  currentPage: 'home',
   selectedCategory: '',
   selectedProductId: '',
   selectedOrderId: '',
-  selectedCustomerMobile: '',
   searchQuery: '',
   navigate: (page) => set({ currentPage: page }),
   setCategory: (slug) => set({ selectedCategory: slug, currentPage: 'products' }),
   setProduct: (id) => set({ selectedProductId: id, currentPage: 'product-detail' }),
   setSelectedProductId: (id) => set({ selectedProductId: id }),
   setOrder: (id) => set({ selectedOrderId: id, currentPage: 'admin-order-detail' }),
-  setCustomerMobile: (mobile) => set({ selectedCustomerMobile: mobile, currentPage: 'admin-customer-detail' }),
   setSearch: (q) => set({ searchQuery: q }),
 }));
 
@@ -166,31 +160,19 @@ export const useCartStore = create<CartState>((set, get) => ({
   getItemCount: () => get().items.reduce((sum, i) => sum + i.quantity, 0),
 }));
 
-// ============ AUTH STORE (Combined login) ============
+// ============ AUTH STORE (Admin-only password login) ============
 interface AuthState {
-  isLoggedIn: boolean;
   isAdmin: boolean;
   adminName: string;
-  customerName: string;
-  customerMobile: string;
-  login: (name: string, mobile: string, isAdmin?: boolean) => void;
   adminLogin: (name: string) => void;
-  setCustomer: (name: string, mobile: string) => void;
-  logout: () => void;
   adminLogout: () => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
-  isLoggedIn: false,
   isAdmin: false,
   adminName: '',
-  customerName: '',
-  customerMobile: '',
-  login: (name, mobile, isAdmin = false) => set({ isLoggedIn: true, isAdmin, customerName: name, customerMobile: mobile, adminName: isAdmin ? name : '' }),
-  adminLogin: (name) => set({ isAdmin: true, isLoggedIn: true, adminName: name }),
-  setCustomer: (name, mobile) => set({ customerName: name, customerMobile: mobile }),
-  logout: () => set({ isLoggedIn: false, isAdmin: false, adminName: '', customerName: '', customerMobile: '' }),
-  adminLogout: () => set({ isAdmin: false, adminName: '', isLoggedIn: false, customerName: '', customerMobile: '' }),
+  adminLogin: (name) => set({ isAdmin: true, adminName: name }),
+  adminLogout: () => set({ isAdmin: false, adminName: '' }),
 }));
 
 // ============ DATA STORE ============
@@ -262,5 +244,23 @@ export const useDataStore = create<DataState>((set) => ({
       const data = await res.json();
       set({ orders: data });
     } catch (e) { console.error('Fetch orders error:', e); }
+  },
+}));
+// ============ LANGUAGE STORE ============
+interface LanguageState {
+  language: Language;
+  setLanguage: (lang: Language) => void;
+  t: (key: import('./i18n').TranslationKey) => string;
+}
+
+export const useLanguageStore = create<LanguageState>((set, get) => ({
+  language: (typeof window !== 'undefined' && (localStorage.getItem('mitra-lang') as Language)) || 'en',
+  setLanguage: (lang) => {
+    if (typeof window !== 'undefined') localStorage.setItem('mitra-lang', lang);
+    set({ language: lang });
+  },
+  t: (key) => {
+    const lang = get().language;
+    return translations[lang]?.[key] || translations.en[key] || key;
   },
 }));

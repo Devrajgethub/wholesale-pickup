@@ -1,6 +1,6 @@
 'use client';
 
-import { useNavStore, useDataStore, useCartStore } from '@/lib/store';
+import { useNavStore, useDataStore, useCartStore, useLanguageStore } from '@/lib/store';
 import ProductCard from './ProductCard';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -11,6 +11,7 @@ export default function ProductsPage() {
   const { products, categories, loading, fetchProducts, fetchCategories } = useDataStore();
   const { selectedCategory, searchQuery, navigate, setCategory } = useNavStore();
   const { items, getTotal } = useCartStore();
+  const { t } = useLanguageStore();
 
   useEffect(() => {
     fetchCategories();
@@ -28,22 +29,22 @@ export default function ProductsPage() {
   const hasCartItems = items.length > 0;
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-[#111827] dark:bg-[#111827]">
+    <div className="min-h-screen bg-gray-50">
       {/* Category Filter Bar */}
-      <div className="bg-white dark:bg-gray-800 dark:bg-gray-800 border-b sticky top-16 z-30">
+      <div className="bg-white border-b sticky top-16 z-30">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center gap-2 py-3 overflow-x-auto scrollbar-hide">
             <button
               onClick={() => { useNavStore.setState({ selectedCategory: '', searchQuery: '' }); }}
-              className={`flex-shrink-0 px-4 py-1.5 rounded-full text-xs font-medium transition-colors ${!selectedCategory && !searchQuery ? 'bg-[#0C831F] text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:bg-gray-700'}`}
+              className={`flex-shrink-0 px-4 py-1.5 rounded-full text-xs font-medium transition-colors ${!selectedCategory && !searchQuery ? 'bg-[#0C831F] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
             >
-              All
+              {t('products.all')}
             </button>
             {categories.map((cat) => (
               <button
                 key={cat.id}
                 onClick={() => setCategory(cat.slug)}
-                className={`flex-shrink-0 px-4 py-1.5 rounded-full text-xs font-medium transition-colors ${selectedCategory === cat.slug ? 'bg-[#0C831F] text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:bg-gray-700'}`}
+                className={`flex-shrink-0 px-4 py-1.5 rounded-full text-xs font-medium transition-colors ${selectedCategory === cat.slug ? 'bg-[#0C831F] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
               >
                 {cat.name}
               </button>
@@ -56,14 +57,14 @@ export default function ProductsPage() {
         {/* Title */}
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">
-              {searchQuery ? `Search: "${searchQuery}"` : currentCategory?.name || 'All Products'}
+            <h2 className="text-lg font-bold text-gray-900">
+              {searchQuery ? `${t('products.search')} "${searchQuery}"` : currentCategory?.name || t('products.allProducts')}
             </h2>
-            <p className="text-xs text-gray-500 dark:text-gray-400">{products.length} products found</p>
+            <p className="text-xs text-gray-500">{products.length} {t('products.productsFound')}</p>
           </div>
           {(selectedCategory || searchQuery) && (
-            <Button variant="ghost" size="sm" className="text-gray-500 dark:text-gray-400" onClick={() => { useNavStore.setState({ selectedCategory: '', searchQuery: '' }); navigate('home'); }}>
-              <X className="h-4 w-4 mr-1" /> Clear
+            <Button variant="ghost" size="sm" className="text-gray-500" onClick={() => { useNavStore.setState({ selectedCategory: '', searchQuery: '' }); navigate('home'); }}>
+              <X className="h-4 w-4 mr-1" /> {t('products.clear')}
             </Button>
           )}
         </div>
@@ -82,11 +83,11 @@ export default function ProductsPage() {
           </div>
         ) : products.length === 0 ? (
           <div className="text-center py-20">
-            <SlidersHorizontal className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-600 dark:text-gray-400">No products found</h3>
-            <p className="text-sm text-gray-400 mt-1">Try a different category or search term</p>
+            <SlidersHorizontal className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-gray-600">{t('products.noProducts')}</h3>
+            <p className="text-sm text-gray-400 mt-1">{t('products.noProductsHint')}</p>
             <Button className="mt-4 bg-[#0C831F] hover:bg-[#0a6e1a] text-white" onClick={() => navigate('home')}>
-              Browse All Products
+              {t('products.browseAll')}
             </Button>
           </div>
         ) : (
@@ -107,8 +108,8 @@ export default function ProductsPage() {
               onClick={() => navigate('cart')}
             >
               <div className="flex items-center gap-3">
-                <span className="bg-yellow-400 text-green-900 text-xs font-bold px-2 py-0.5 rounded">{items.length} item{items.length > 1 ? 's' : ''}</span>
-                <span>View Cart</span>
+                <span className="bg-yellow-400 text-green-900 text-xs font-bold px-2 py-0.5 rounded">{items.length} {items.length > 1 ? t('home.items') : t('home.item')}</span>
+                <span>{t('products.viewCart')}</span>
               </div>
               <span>₹{cartTotal.toLocaleString()}</span>
             </Button>

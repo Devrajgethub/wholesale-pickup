@@ -1,13 +1,23 @@
 'use client';
 
-import { useDataStore, Order } from '@/lib/store';
+import { useDataStore, useLanguageStore, Order } from '@/lib/store';
 import { Card, CardContent } from '@/components/ui/card';
 import { useEffect } from 'react';
 import { Package, ShoppingCart, IndianRupee, Clock, TrendingUp, AlertCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 
+const statusTranslationKeys: Record<string, string> = {
+  'Pending': 'status.pending',
+  'Accepted': 'status.accepted',
+  'Packing': 'status.packing',
+  'Ready for Pickup': 'status.readyForPickup',
+  'Completed': 'status.completed',
+  'Cancelled': 'status.cancelled',
+};
+
 export default function AdminDashboard() {
   const { orders, products, categories, fetchOrders, fetchProducts, fetchCategories } = useDataStore();
+  const { t } = useLanguageStore();
 
   useEffect(() => {
     fetchOrders();
@@ -25,12 +35,12 @@ export default function AdminDashboard() {
   });
 
   const stats = [
-    { label: 'Total Revenue', value: `₹${totalRevenue.toLocaleString()}`, icon: IndianRupee, color: 'text-green-600', bg: 'bg-green-50 dark:bg-green-900/20', border: 'border-green-200' },
-    { label: 'Total Orders', value: orders.length.toString(), icon: ShoppingCart, color: 'text-blue-600', bg: 'bg-blue-50 dark:bg-blue-900/20', border: 'border-blue-200' },
-    { label: 'Pending Orders', value: pendingOrders.toString(), icon: Clock, color: 'text-yellow-600', bg: 'bg-yellow-50 dark:bg-yellow-900/20', border: 'border-yellow-200' },
-    { label: 'Ready for Pickup', value: readyOrders.toString(), icon: TrendingUp, color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-50 dark:bg-emerald-900/20', border: 'border-emerald-200 dark:border-emerald-800' },
-    { label: 'Total Products', value: products.length.toString(), icon: Package, color: 'text-purple-600', bg: 'bg-purple-50 dark:bg-purple-900/20', border: 'border-purple-200' },
-    { label: 'Categories', value: categories.length.toString(), icon: AlertCircle, color: 'text-orange-600', bg: 'bg-orange-50 dark:bg-orange-900/20', border: 'border-orange-200' },
+    { label: t('dashboard.totalRevenue'), value: `₹${totalRevenue.toLocaleString()}`, icon: IndianRupee, color: 'text-green-600', bg: 'bg-green-50', border: 'border-green-200' },
+    { label: t('dashboard.totalOrders'), value: orders.length.toString(), icon: ShoppingCart, color: 'text-blue-600', bg: 'bg-blue-50', border: 'border-blue-200' },
+    { label: t('dashboard.pendingOrders'), value: pendingOrders.toString(), icon: Clock, color: 'text-yellow-600', bg: 'bg-yellow-50', border: 'border-yellow-200' },
+    { label: t('dashboard.readyForPickup'), value: readyOrders.toString(), icon: TrendingUp, color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-50 dark:bg-emerald-900/20', border: 'border-emerald-200 dark:border-emerald-800' },
+    { label: t('dashboard.totalProducts'), value: products.length.toString(), icon: Package, color: 'text-purple-600', bg: 'bg-purple-50', border: 'border-purple-200' },
+    { label: t('dashboard.categories'), value: categories.length.toString(), icon: AlertCircle, color: 'text-orange-600', bg: 'bg-orange-50', border: 'border-orange-200' },
   ];
 
   const recentOrders = orders.slice(0, 5);
@@ -45,11 +55,11 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-[#111827] dark:bg-[#111827]">
+    <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 py-6">
         <div className="mb-6">
-          <h1 className="text-2xl font-extrabold text-gray-900 dark:text-gray-100">Admin Dashboard</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Welcome back! Here is your store overview.</p>
+          <h1 className="text-2xl font-extrabold text-gray-900">{t('dashboard.title')}</h1>
+          <p className="text-sm text-gray-500 mt-1">{t('dashboard.welcome')}</p>
         </div>
 
         {/* Stats Grid */}
@@ -59,8 +69,8 @@ export default function AdminDashboard() {
               <Card className={`${stat.bg} ${stat.border} border`}>
                 <CardContent className="p-4">
                   <stat.icon className={`h-5 w-5 ${stat.color} mb-2`} />
-                  <p className="text-2xl font-extrabold text-gray-900 dark:text-gray-100">{stat.value}</p>
-                  <p className="text-[11px] text-gray-600 dark:text-gray-400 mt-0.5">{stat.label}</p>
+                  <p className="text-2xl font-extrabold text-gray-900">{stat.value}</p>
+                  <p className="text-[11px] text-gray-600 mt-0.5">{stat.label}</p>
                 </CardContent>
               </Card>
             </motion.div>
@@ -71,11 +81,11 @@ export default function AdminDashboard() {
         <div className="bg-gradient-to-r from-[#0C831F] to-[#0fa828] rounded-2xl p-6 text-white mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-green-200 text-sm">Today&apos;s Orders</p>
+              <p className="text-green-200 text-sm">{t('dashboard.todaysOrders')}</p>
               <p className="text-3xl font-extrabold mt-1">{todayOrders.length}</p>
             </div>
             <div className="text-right">
-              <p className="text-green-200 text-sm">Today&apos;s Revenue</p>
+              <p className="text-green-200 text-sm">{t('dashboard.todaysRevenue')}</p>
               <p className="text-3xl font-extrabold mt-1">₹{todayOrders.reduce((s, o) => s + o.totalAmount, 0).toLocaleString()}</p>
             </div>
           </div>
@@ -83,34 +93,34 @@ export default function AdminDashboard() {
 
         {/* Recent Orders */}
         <div>
-          <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-3">Recent Orders</h2>
+          <h2 className="text-lg font-bold text-gray-900 mb-3">{t('dashboard.recentOrders')}</h2>
           <Card>
             <CardContent className="p-0">
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
-                  <thead className="bg-gray-50 dark:bg-[#111827] dark:bg-[#111827] border-b">
+                  <thead className="bg-gray-50 border-b">
                     <tr>
-                      <th className="text-left p-3 font-medium text-gray-600 dark:text-gray-400">Order ID</th>
-                      <th className="text-left p-3 font-medium text-gray-600 dark:text-gray-400">Customer</th>
-                      <th className="text-left p-3 font-medium text-gray-600 dark:text-gray-400 hidden md:table-cell">Items</th>
-                      <th className="text-left p-3 font-medium text-gray-600 dark:text-gray-400">Total</th>
-                      <th className="text-left p-3 font-medium text-gray-600 dark:text-gray-400">Status</th>
-                      <th className="text-left p-3 font-medium text-gray-600 dark:text-gray-400">Payment</th>
+                      <th className="text-left p-3 font-medium text-gray-600">{t('dashboard.orderId')}</th>
+                      <th className="text-left p-3 font-medium text-gray-600">{t('dashboard.customer')}</th>
+                      <th className="text-left p-3 font-medium text-gray-600 hidden md:table-cell">{t('dashboard.items')}</th>
+                      <th className="text-left p-3 font-medium text-gray-600">{t('dashboard.total')}</th>
+                      <th className="text-left p-3 font-medium text-gray-600">{t('dashboard.status')}</th>
+                      <th className="text-left p-3 font-medium text-gray-600">{t('dashboard.payment')}</th>
                     </tr>
                   </thead>
                   <tbody>
                     {recentOrders.map((order: Order) => (
-                      <tr key={order.id} className="border-b last:border-0 hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-[#111827]">
+                      <tr key={order.id} className="border-b last:border-0 hover:bg-gray-50">
                         <td className="p-3 font-bold text-[#0C831F]">#{order.orderId}</td>
                         <td className="p-3">
-                          <div className="font-medium text-gray-900 dark:text-gray-100">{order.customerName}</div>
-                          <div className="text-xs text-gray-500 dark:text-gray-400">{order.mobile}</div>
+                          <div className="font-medium text-gray-900">{order.customerName}</div>
+                          <div className="text-xs text-gray-500">{order.mobile}</div>
                         </td>
-                        <td className="p-3 hidden md:table-cell">{order.items.length} items</td>
+                        <td className="p-3 hidden md:table-cell">{order.items.length} {t('dashboard.items').toLowerCase()}</td>
                         <td className="p-3 font-bold">₹{order.totalAmount.toLocaleString()}</td>
                         <td className="p-3">
-                          <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${statusColor[order.orderStatus] || 'bg-gray-100 dark:bg-gray-700'}`}>
-                            {order.orderStatus}
+                          <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${statusColor[order.orderStatus] || 'bg-gray-100'}`}>
+                            {t(statusTranslationKeys[order.orderStatus] as any)}
                           </span>
                         </td>
                         <td className="p-3">
@@ -121,7 +131,7 @@ export default function AdminDashboard() {
                       </tr>
                     ))}
                     {recentOrders.length === 0 && (
-                      <tr><td colSpan={6} className="p-8 text-center text-gray-400">No orders yet</td></tr>
+                      <tr><td colSpan={6} className="p-8 text-center text-gray-400">{t('dashboard.noOrders')}</td></tr>
                     )}
                   </tbody>
                 </table>

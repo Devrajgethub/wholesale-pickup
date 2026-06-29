@@ -1,6 +1,6 @@
 'use client';
 
-import { useNavStore, useDataStore, useCartStore, Product } from '@/lib/store';
+import { useNavStore, useDataStore, useCartStore, useLanguageStore, Product } from '@/lib/store';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Minus, Plus, ShoppingCart, Package } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -10,6 +10,7 @@ export default function ProductDetailPage() {
   const { selectedProductId, navigate } = useNavStore();
   const { products, fetchProducts } = useDataStore();
   const { items, addItem, updateQuantity, removeItem } = useCartStore();
+  const { t } = useLanguageStore();
   const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
@@ -21,11 +22,11 @@ export default function ProductDetailPage() {
 
   if (!product) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-[#111827] dark:bg-[#111827] flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <Package className="h-16 w-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-600 dark:text-gray-400">Product not found</h3>
-          <Button className="mt-4 bg-[#0C831F] text-white" onClick={() => navigate('home')}>Go Home</Button>
+          <Package className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-gray-600">{t('detail.productNotFound')}</h3>
+          <Button className="mt-4 bg-[#0C831F] text-white" onClick={() => navigate('home')}>{t('detail.goHome')}</Button>
         </div>
       </div>
     );
@@ -48,21 +49,21 @@ export default function ProductDetailPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-[#111827] dark:bg-[#111827]">
+    <div className="min-h-screen bg-gray-50">
       {/* Top Bar */}
-      <div className="bg-white dark:bg-gray-800 dark:bg-gray-800 border-b sticky top-16 z-30">
+      <div className="bg-white border-b sticky top-16 z-30">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center gap-3">
-          <Button variant="ghost" size="icon" className="text-gray-600 dark:text-gray-400" onClick={() => navigate('products')}>
+          <Button variant="ghost" size="icon" className="text-gray-600" onClick={() => navigate('products')}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <span className="font-medium text-gray-900 dark:text-gray-100 text-sm truncate">{product.name}</span>
+          <span className="font-medium text-gray-900 text-sm truncate">{product.name}</span>
         </div>
       </div>
 
       <div className="max-w-3xl mx-auto px-4 py-4">
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-white dark:bg-gray-800 dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-white rounded-2xl overflow-hidden shadow-sm">
           {/* Image */}
-          <div className="aspect-square bg-gray-50 dark:bg-[#111827] flex items-center justify-center">
+          <div className="aspect-square bg-gray-50 flex items-center justify-center">
             {product.image ? (
               <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
             ) : (
@@ -74,37 +75,37 @@ export default function ProductDetailPage() {
           <div className="p-5">
             <div className="flex items-start justify-between">
               <div>
-                <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">{product.name}</h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{product.unit}</p>
+                <h1 className="text-xl font-bold text-gray-900">{product.name}</h1>
+                <p className="text-sm text-gray-500 mt-1">{product.unit}</p>
               </div>
               {discount > 0 && (
-                <span className="bg-green-100 dark:bg-green-900/30 text-[#0C831F] text-xs font-bold px-2 py-1 rounded-lg">{discount}% OFF</span>
+                <span className="bg-green-100 text-[#0C831F] text-xs font-bold px-2 py-1 rounded-lg">{discount}% {t('detail.off')}</span>
               )}
             </div>
 
             <div className="flex items-baseline gap-3 mt-4">
-              <span className="text-3xl font-extrabold text-gray-900 dark:text-gray-100">₹{product.price.toLocaleString()}</span>
+              <span className="text-3xl font-extrabold text-gray-900">₹{product.price.toLocaleString()}</span>
               {product.mrp > product.price && (
                 <span className="text-lg text-gray-400 line-through">₹{product.mrp.toLocaleString()}</span>
               )}
             </div>
             {savings > 0 && (
-              <p className="text-sm text-[#0C831F] font-medium mt-1">You save ₹{savings.toLocaleString()} on this order</p>
+              <p className="text-sm text-[#0C831F] font-medium mt-1">{t('detail.youSave')} ₹{savings.toLocaleString()} {t('detail.onThisOrder')}</p>
             )}
 
             {/* Info */}
             <div className="mt-6 space-y-3 border-t pt-4">
               <div className="flex justify-between text-sm">
-                <span className="text-gray-500 dark:text-gray-400">Stock Available</span>
-                <span className={`font-medium ${product.stock > 5 ? 'text-[#0C831F]' : 'text-red-500'}`}>{product.stock} units</span>
+                <span className="text-gray-500">{t('detail.stockAvailable')}</span>
+                <span className={`font-medium ${product.stock > 5 ? 'text-[#0C831F]' : 'text-red-500'}`}>{product.stock} {t('cart.units')}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-gray-500 dark:text-gray-400">Minimum Order</span>
-                <span className="font-medium text-gray-900 dark:text-gray-100">{product.minQuantity} {product.unit}</span>
+                <span className="text-gray-500">{t('detail.minimumOrder')}</span>
+                <span className="font-medium text-gray-900">{product.minQuantity} {product.unit}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-gray-500 dark:text-gray-400">Category</span>
-                <span className="font-medium text-gray-900 dark:text-gray-100">{product.category?.name}</span>
+                <span className="text-gray-500">{t('detail.category')}</span>
+                <span className="font-medium text-gray-900">{product.category?.name}</span>
               </div>
             </div>
 
@@ -127,7 +128,7 @@ export default function ProductDetailPage() {
                   <div className="flex-1">
                     <Button className="w-full bg-yellow-400 text-green-900 hover:bg-yellow-300 font-bold h-12 rounded-xl" onClick={() => navigate('cart')}>
                       <ShoppingCart className="h-5 w-5 mr-2" />
-                      Go to Cart
+                      {t('detail.goToCart')}
                     </Button>
                   </div>
                 </div>
@@ -137,7 +138,7 @@ export default function ProductDetailPage() {
                   onClick={handleAdd}
                   disabled={product.stock <= 0}
                 >
-                  {product.stock > 0 ? 'ADD TO CART' : 'OUT OF STOCK'}
+                  {product.stock > 0 ? t('detail.addToCart') : t('detail.outOfStock')}
                 </Button>
               )}
             </div>
